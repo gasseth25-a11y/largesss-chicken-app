@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🛒 MSCK CHIC — Pilotage v12.0</title>
+<title>🛒 MSCK CHIC — Pilotage v13.0</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#F4F6F9;color:#212121;font-size:13px}
@@ -92,8 +92,8 @@ td.center{text-align:center}
 
 <div class="header">
   <div>
-    <h1>🛒 MSCK CHIC — Pilotage v12.0</h1>
-    <div class="sub">Sauvegarde manuelle & Pilotage Salarial Combo</div>
+    <h1>🛒 MSCK CHIC — Pilotage v13.0</h1>
+    <div class="sub">Récupération des données & Persistance unifiée</div>
   </div>
   <div class="actions">
     <button class="btn btn-orange btn-sm" onclick="manuelSave()">💾 Sauvegarder</button>
@@ -232,7 +232,7 @@ td.center{text-align:center}
         <div class="form-row">
           <div class="field"><label>Fournisseur</label><select id="saisieFour"><option value="Maxi Distrib">Maxi Distrib</option><option value="Metro">Metro</option></select></div>
           <div class="field"><label>N° de Facture / BL</label><input type="text" id="saisieRef" placeholder="ex: FAC-2026-998" required></div>
-          <div class="field"><label>Montant HT (€)</label><input type="number" id="saisieMontant" step="0.01" required></div>
+          <div class="field"><label>Montant HT (€)</label><input type="number" id="inputMontant" step="0.01" required></div>
         </div>
         <button type="submit" class="btn btn-green" style="margin-top:10px">✅ Enregistrer la facture</button>
       </form>
@@ -241,7 +241,25 @@ td.center{text-align:center}
 </div>
 
 <script>
+// Clé principale et clés de secours pour récupérer les données des anciennes versions (V10, V11, V12)
 const STORAGE_KEY = 'msck_chic_global_db';
+const OLD_KEYS = ['msck_v10_data', 'msck_v11_data', 'msck_v12_data', 'msck_chic_data'];
+
+function recupererAnciennesDonnees() {
+  let existing = localStorage.getItem(STORAGE_KEY);
+  if (!existing) {
+    // Chercher dans les anciennes clés si des données existent
+    for (let oldKey of OLD_KEYS) {
+      let oldData = localStorage.getItem(oldKey);
+      if (oldData) {
+        localStorage.setItem(STORAGE_KEY, oldData);
+        break;
+      }
+    }
+  }
+}
+
+recupererAnciennesDonnees();
 
 let db = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
   periodes: {
@@ -431,14 +449,14 @@ function enregistrerFacture(e) {
   const origin = document.getElementById('saisieOrigine').value;
   const fournisseur = document.getElementById('saisieFour').value;
   const ref = document.getElementById('saisieRef').value;
-  const montant = parseFloat(document.getElementById('saisieMontant').value);
+  const montant = parseFloat(document.getElementById('inputMontant').value);
 
   if(!isNaN(montant) && montant > 0) {
     getPeriodeData(cible).factures.push({date, origin, fournisseur, ref, montant});
     saveData();
     alert(`✅ Facture enregistrée dans ${cible} !`);
     document.getElementById('saisieRef').value = '';
-    document.getElementById('saisieMontant').value = '';
+    document.getElementById('inputMontant').value = '';
     showTab('achats');
   }
 }
