@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🛒 MSCK CHIC — Pilotage & Calendrier v9.0</title>
+<title>🛒 MSCK CHIC — Pilotage & Factures v10.0</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#F4F6F9;color:#212121;font-size:13px}
@@ -66,7 +66,7 @@ td.center{text-align:center}
 .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:12px}
 .field{display:flex;flex-direction:column;gap:4px}
 .field label{font-size:11px;font-weight:600;color:#555}
-.field input,.field select{padding:8px 10px;border:1px solid #DDD;border-radius:6px;font-size:12px;outline:none;background:#fff}
+.field input, .field select{padding:8px 10px;border:1px solid #DDD;border-radius:6px;font-size:12px;outline:none;background:#fff}
 .btn{padding:8px 14px;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
 .btn-orange{background:var(--orange);color:#fff}
 .btn-green{background:var(--green);color:#fff}
@@ -89,8 +89,8 @@ td.center{text-align:center}
 
 <div class="header">
   <div>
-    <h1>🛒 MSCK CHIC — Pilotage v9.0</h1>
-    <div class="sub">Gestion multi-semaines avec calendrier exact (2026)</div>
+    <h1>🛒 MSCK CHIC — Pilotage v10.0</h1>
+    <div class="sub">Gestion multi-semaines & Calendrier des factures</div>
   </div>
   <button class="btn btn-gray btn-sm" onclick="logout()">🔒 Verrouiller</button>
 </div>
@@ -109,7 +109,7 @@ td.center{text-align:center}
     <div style="flex:1;display:flex;gap:10px;align-items:center">
       <label style="font-weight:bold">Période :</label>
       <select id="selectSemaine" onchange="changerPeriodeSelection()">
-        <!-- Généré dynamiquement en JS avec les dates -->
+        <!-- Généré en JS -->
       </select>
     </div>
     <button class="btn btn-gray btn-sm" onclick="changerSemaine(1)">Suivant ▶</button>
@@ -150,10 +150,10 @@ td.center{text-align:center}
     <div class="card-body" style="padding:0">
       <table>
         <thead>
-          <tr><th>Source</th><th>Fournisseur</th><th>Référence / BL</th><th style="text-align:right">Montant HT</th><th class="center">Actions</th></tr>
+          <tr><th>Date Facture</th><th>Source</th><th>Fournisseur</th><th>N° Facture / BL</th><th style="text-align:right">Montant HT</th><th class="center">Actions</th></tr>
         </thead>
         <tbody id="tbodyAchats">
-          <tr><td colspan="5" style="text-align:center;color:#9E9E9E;padding:20px">Aucune facture</td></tr>
+          <tr><td colspan="6" style="text-align:center;color:#9E9E9E;padding:20px">Aucune facture</td></tr>
         </tbody>
       </table>
     </div>
@@ -189,28 +189,30 @@ td.center{text-align:center}
   </div>
 
   <div class="card">
-    <div class="card-hdr">➕ Ajouter / Corriger une facture (Manuelle ou Synchro Auto)</div>
+    <div class="card-hdr">➕ Ajouter / Corriger une facture (avec Date et Numéro)</div>
     <div class="card-body">
       <form onsubmit="enregistrerFacture(event)">
         <div class="form-row">
           <div class="field">
             <label>Période cible</label>
-            <select id="saisiePeriodeCible">
-              <!-- Rempli dynamiquement -->
-            </select>
+            <select id="saisiePeriodeCible"></select>
           </div>
           <div class="field">
-            <label>Origine de la facture</label>
+            <label>Date de la facture</label>
+            <input type="date" id="saisieDateFacture" required>
+          </div>
+          <div class="field">
+            <label>Origine</label>
             <select id="saisieOrigine">
               <option value="Manuel">Saisie Manuelle</option>
               <option value="Automatique Metro">🔄 Synchro Auto Metro</option>
               <option value="Automatique Maxi">🔄 Synchro Auto Maxi Distrib</option>
             </select>
           </div>
-          <div class="field"><label>Fournisseur</label><select id="saisieFour"><option value="Maxi Distrib">Maxi Distrib</option><option value="Metro">Metro</option></select></div>
         </div>
         <div class="form-row">
-          <div class="field"><label>Référence / BL</label><input type="text" id="saisieRef" placeholder="ex: FAC-998" required></div>
+          <div class="field"><label>Fournisseur</label><select id="saisieFour"><option value="Maxi Distrib">Maxi Distrib</option><option value="Metro">Metro</option></select></div>
+          <div class="field"><label>N° de Facture / BL</label><input type="text" id="saisieRef" placeholder="ex: FAC-2026-998" required></div>
           <div class="field"><label>Montant HT (€)</label><input type="number" id="saisieMontant" step="0.01" required></div>
         </div>
         <button type="submit" class="btn btn-green" style="margin-top:10px">✅ Enregistrer la facture</button>
@@ -220,7 +222,7 @@ td.center{text-align:center}
 </div>
 
 <script>
-let db = JSON.parse(localStorage.getItem('msck_v9_data')) || {
+let db = JSON.parse(localStorage.getItem('msck_v10_data')) || {
   periodes: {
     "S27": { ca: 22000, masseSalariale: 4620, factures: [] }
   }
@@ -228,7 +230,6 @@ let db = JSON.parse(localStorage.getItem('msck_v9_data')) || {
 
 let periodeActive = "S27";
 
-// Fonction pour calculer les dates de début et fin de chaque semaine ISO pour 2026
 function getDateRangeOfWeek(weekNumber, year) {
   let simple = new Date(year, 0, 1 + (weekNumber - 1) * 7);
   let dow = simple.getDay();
@@ -237,7 +238,6 @@ function getDateRangeOfWeek(weekNumber, year) {
     ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
   else
     ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
-  
   let ISOweekEnd = new Date(ISOweekStart);
   ISOweekEnd.setDate(ISOweekStart.getDate() + 6);
 
@@ -248,7 +248,6 @@ function getDateRangeOfWeek(weekNumber, year) {
   };
 }
 
-// Initialisation des listes déroulantes de semaines avec les dates exactes pour 2026
 function initSemainesOptions() {
   let optionsHtml = "";
   for(let i = 1; i <= 52; i++) {
@@ -261,6 +260,9 @@ function initSemainesOptions() {
   document.getElementById('selectSemaine').innerHTML = optionsHtml;
   document.getElementById('saisiePeriodeCible').innerHTML = optionsHtml;
   document.getElementById('selectSemaine').value = periodeActive;
+  
+  // Mettre la date du jour par défaut dans le champ calendrier de saisie
+  document.getElementById('saisieDateFacture').value = new Date().toISOString().slice(0, 10);
 }
 
 function verifierLogin() {
@@ -287,7 +289,7 @@ function changerSemaine(sens) {
   if(idx >= 0 && idx < select.options.length) { select.selectedIndex = idx; changerPeriodeSelection(); }
 }
 
-function saveData() { localStorage.setItem('msck_v9_data', JSON.stringify(db)); refreshUI(); }
+function saveData() { localStorage.setItem('msck_v10_data', JSON.stringify(db)); refreshUI(); }
 function showTab(id) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -306,7 +308,6 @@ function refreshUI() {
   const salReel = pData.masseSalariale;
   const pctSal = ca > 0 ? (salReel / ca * 100) : 0;
 
-  // Récupérer le libellé textuel de la période active avec ses dates pour l'affichage
   let selectEl = document.getElementById('selectSemaine');
   let activeText = periodeActive;
   if(selectEl && selectEl.options[selectEl.selectedIndex]) {
@@ -338,11 +339,15 @@ function refreshUI() {
 
   const tb = document.getElementById('tbodyAchats');
   if(pData.factures.length === 0) {
-    tb.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#9E9E9E;padding:20px">Aucune facture pour ${activeText}</td></tr>`;
+    tb.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#9E9E9E;padding:20px">Aucune facture pour ${activeText}</td></tr>`;
   } else {
-    tb.innerHTML = pData.factures.map((f, i) => `
+    // Trier par date décroissante
+    let facturesTriees = [...pData.factures].sort((a,b) => (b.date || "").localeCompare(a.date || ""));
+    
+    tb.innerHTML = facturesTriees.map((f, i) => `
       <tr>
-        <td><span class="badge ${f.origin.includes('Auto')?'badge-auto':'badge-max'}">${f.origin}</span></td>
+        <td><strong>${f.date || '—'}</strong></td>
+        <td><span class="badge ${f.origin && f.origin.includes('Auto')?'badge-auto':'badge-max'}">${f.origin || 'Manuel'}</span></td>
         <td><strong style="color:${f.fournisseur==='Maxi Distrib'?'var(--orange)':'var(--blue)'}">${f.fournisseur}</strong></td>
         <td>${f.ref}</td>
         <td class="num" style="font-weight:700">${fmt(f.montant)}</td>
@@ -364,15 +369,16 @@ function saveSalairesPeriode() { getPeriodeData(periodeActive).masseSalariale = 
 function enregistrerFacture(e) {
   e.preventDefault();
   const cible = document.getElementById('saisiePeriodeCible').value;
+  const date = document.getElementById('saisieDateFacture').value;
   const origin = document.getElementById('saisieOrigine').value;
   const fournisseur = document.getElementById('saisieFour').value;
   const ref = document.getElementById('saisieRef').value;
   const montant = parseFloat(document.getElementById('saisieMontant').value);
 
   if(!isNaN(montant) && montant > 0) {
-    getPeriodeData(cible).factures.push({origin, fournisseur, ref, montant});
+    getPeriodeData(cible).factures.push({date, origin, fournisseur, ref, montant});
     saveData();
-    alert(`✅ Facture enregistrée !`);
+    alert(`✅ Facture du ${date} (${ref}) enregistrée dans ${cible} !`);
     document.getElementById('saisieRef').value = '';
     document.getElementById('saisieMontant').value = '';
     showTab('achats');
@@ -386,7 +392,6 @@ function supprimerFacture(idx) {
   }
 }
 
-// Lancement de l'initialisation du calendrier
 initSemainesOptions();
 refreshUI();
 </script>
