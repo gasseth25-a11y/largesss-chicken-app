@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛒 MSCK CHIC — Pilotage & Gestion des Factures</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#F4F6F9;color:#212121;font-size:13px}
+:root{
+  --orange:#FF8C00;--orange-l:#FFF3E0;--orange-m:#FFE0B2;
+  --blue:#1565C0;--blue-l:#E3F2FD;
+  --green:#2E7D32;--green-l:#E8F5E9;
+  --red:#C62828;--red-l:#FFEBEE;
+  --purple:#6A1B9A;--teal:#00796B;--gray:#37474F;--gray-l:#ECEFF1;
+}
+
+/* LOGIN */
+#loginOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:#16213e;padding:30px;border-radius:15px;width:100%;max-width:380px;box-shadow:0 10px 30px rgba(0,0,0,0.5);text-align:center;color:#fff}
+.login-box h2{margin-bottom:20px;font-size:22px;color:var(--orange)}
+.login-box input{width:100%;padding:12px;margin-bottom:12px;border-radius:8px;border:1px solid #444;background:#222831;color:#fff;font-size:14px}
+.login-box button{width:100%;padding:12px;border:none;border-radius:8px;background:var(--orange);color:#fff;font-weight:bold;cursor:pointer}
+
+/* HEADER & TABS */
+.header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:18px;font-weight:700}
+.tabs{background:#fff;border-bottom:2px solid var(--gray-l);display:flex;padding:0 16px;overflow-x:auto;gap:4px}
+.tab{padding:12px 14px;cursor:pointer;border-bottom:3px solid transparent;font-size:12px;font-weight:600;color:#757575;white-space:nowrap}
+.tab.active{color:var(--orange);border-bottom-color:var(--orange)}
+
+/* PANELS & CARDS */
+.panel{display:none;padding:16px}
+.panel.active{display:block}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:#fff;border-radius:10px;padding:14px 16px;box-shadow:0 2px 6px rgba(0,0,0,.06);border-left:4px solid var(--orange)}
+.kpi.blue{border-color:var(--blue)}
+.kpi.green{border-color:var(--green)}
+.kpi.red{border-color:var(--red)}
+.kpi.teal{border-color:var(--teal)}
+.kpi label{font-size:10px;color:#757575;text-transform:uppercase;display:block;margin-bottom:4px}
+.kpi .val{font-size:22px;font-weight:700;color:#212121}
+.kpi .sub{font-size:10px;color:#9E9E9E;margin-top:2px}
+.badge-status{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:bold;margin-top:4px}
+.status-ok{background:var(--green-l);color:var(--green)}
+.status-warn{background:var(--orange-l);color:var(--orange)}
+.status-alert{background:var(--red-l);color:var(--red)}
+
+.card{background:#fff;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px;overflow:hidden}
+.card-hdr{background:var(--gray);color:#fff;padding:12px 16px;font-weight:700;font-size:12px}
+.card-body{padding:16px}
+
+/* TABLES */
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:var(--gray);color:#fff;padding:9px 12px;text-align:left;font-size:11px}
+td{padding:8px 12px;border-bottom:1px solid #ECEFF1;vertical-align:middle}
+tr:hover td{background:#FAFAFA}
+td.num{text-align:right}
+td.center{text-align:center}
+.badge{padding:3px 8px;border-radius:12px;font-size:10px;font-weight:700}
+.badge-max{background:var(--orange-m);color:var(--orange)}
+.badge-metro{background:var(--blue-l);color:var(--blue)}
+.badge-auto{background:#E0F7FA;color:#006064}
+
+/* FORMS & NAV */
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:11px;font-weight:600;color:#555}
+.field input,.field select{padding:8px 10px;border:1px solid #DDD;border-radius:6px;font-size:12px;outline:none;background:#fff}
+.btn{padding:8px 14px;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.btn-orange{background:var(--orange);color:#fff}
+.btn-green{background:var(--green);color:#fff}
+.btn-gray{background:#ECEFF1;color:#37474F}
+.btn-sm{padding:4px 8px;font-size:11px}
+.week-nav{display:flex;align-items:center;gap:8px;background:#fff;padding:10px 16px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px}
+.week-nav select{padding:6px 12px;border-radius:6px;border:1px solid #DDD;font-weight:bold}
+</style>
+</head>
+<body>
+
+<div id="loginOverlay">
+  <div class="login-box">
+    <h2>🔐 MSCK CHIC - Sécurité</h2>
+    <p style="font-size:12px;color:#B0BEC5;margin-bottom:15px">Entrez le code d'accès</p>
+    <input type="password" id="pinCode" placeholder="Code secret (ex: 1234)">
+    <button onclick="verifierLogin()">Se connecter</button>
+  </div>
+</div>
+
+<div class="header">
+  <div>
+    <h1>🛒 MSCK CHIC — Pilotage & Factures</h1>
+    <div class="sub">Gestion et contrôle des factures (Manuelles & Automatiques)</div>
+  </div>
+  <button class="btn btn-gray btn-sm" onclick="logout()">🔒 Verrouiller</button>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('synthese')">🎯 Synthèse & Période</div>
+  <div class="tab" onclick="showTab('achats')">📦 Suivi & Gestion Achats</div>
+  <div class="tab" onclick="showTab('salaires')">👥 Masse Salariale (≤ 21%)</div>
+  <div class="tab" onclick="showTab('saisie')">➕ Ajouter une Facture</div>
+</div>
+
+<!-- SYNTHÈSE -->
+<div class="panel active" id="panel-synthese">
+  <div class="week-nav">
+    <button class="btn btn-gray btn-sm" onclick="changerSemaine(-1)">◀ Précédent</button>
+    <div style="flex:1;display:flex;gap:10px;align-items:center">
+      <label style="font-weight:bold">Période :</label>
+      <select id="selectSemaine" onchange="changerPeriodeSelection()">
+        <option value="S19">Semaine S19</option>
+        <option value="S20">Semaine S20</option>
+        <option value="S25">Semaine S25</option>
+        <option value="S26">Semaine S26</option>
+        <option value="S27" selected>Semaine S27 (Courante)</option>
+        <option value="S28">Semaine S28</option>
+        <option value="MOIS-06">Mois de Juin 2026</option>
+        <option value="MOIS-07">Mois de Juillet 2026</option>
+      </select>
+    </div>
+    <button class="btn btn-gray btn-sm" onclick="changerSemaine(1)">Suivant ▶</button>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi teal">
+      <label>Chiffre d'Affaires (Splash 360)</label>
+      <div class="val" id="synCA">0 €</div>
+      <div class="sub" id="lblPeriodeSub">Période : S27</div>
+    </div>
+    <div class="kpi" id="kpiCardAchats">
+      <label>Masse d'Achats / Marge Brute</label>
+      <div class="val" id="synAchats">0 €</div>
+      <div class="sub" id="synAchatsPct">0% du CA (Cible : 30 - 35%)</div>
+      <div id="badgeAchats" class="badge-status status-ok">En attente</div>
+    </div>
+    <div class="kpi" id="kpiCardSalaires">
+      <label>Masse Salariale (Combo)</label>
+      <div class="val" id="synSalaires">0 €</div>
+      <div class="sub" id="synSalairesPct">0% du CA (Cible : ≤ 21%)</div>
+      <div id="badgeSalaires" class="badge-status status-ok">En attente</div>
+    </div>
+  </div>
+</div>
+
+<!-- ACHATS & GESTION FACTURES -->
+<div class="panel" id="panel-achats">
+  <div class="kpi-row">
+    <div class="kpi teal"><label>CA Période</label><div class="val" id="achatsCA">0 €</div></div>
+    <div class="kpi green"><label>Seuil Optimal (30%)</label><div class="val" id="achatsOpt">0 €</div></div>
+    <div class="kpi red"><label>Seuil Limite (35%)</label><div class="val" id="achatsMax">0 €</div></div>
+    <div class="kpi orange"><label>Total Dépensé</label><div class="val" id="achatsTotal">0 €</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-hdr">📦 Liste des factures (Manuelles & Automatiques Metro / Maxi Distrib)</div>
+    <div class="card-body" style="padding:0">
+      <table>
+        <thead>
+          <tr><th>Source</th><th>Fournisseur</th><th>Référence / BL</th><th style="text-align:right">Montant HT</th><th class="center">Actions</th></tr>
+        </thead>
+        <tbody id="tbodyAchats">
+          <tr><td colspan="5" style="text-align:center;color:#9E9E9E;padding:20px">Aucune facture</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MASSE SALARIALE -->
+<div class="panel" id="panel-salaires">
+  <div class="kpi-row">
+    <div class="kpi teal"><label>CA Période</label><div class="val" id="salCA">0 €</div></div>
+    <div class="kpi green"><label>Budget Salarial Max (21%)</label><div class="val" id="salBudget21">0 €</div></div>
+    <div class="kpi purple"><label>Masse Salariale Réelle</label><div class="val" id="salReel">0 €</div></div>
+  </div>
+  <div class="card">
+    <div class="card-hdr">👥 Ajuster la masse salariale</div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="field"><label>Masse salariale engagée (€)</label><input type="number" id="inputMasseSalariale" step="0.01" oninput="saveSalairesPeriode()"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SAISIE -->
+<div class="panel" id="panel-saisie">
+  <div class="card">
+    <div class="card-hdr">⚙️ Définir le CA de la période active</div>
+    <div class="card-body">
+      <div class="form-row">
+        <div class="field"><label>Chiffre d'Affaires HT (€)</label><input type="number" id="inputCA" step="100" oninput="saveCA()"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hdr">➕ Ajouter / Corriger une facture (Manuelle ou simulée Auto)</div>
+    <div class="card-body">
+      <form onsubmit="enregistrerFacture(event)">
+        <div class="form-row">
+          <div class="field">
+            <label>Période cible</label>
+            <select id="saisiePeriodeCible">
+              <option value="S19">Semaine S19</option><option value="S20">Semaine S20</option>
+              <option value="S25">Semaine S25</option><option value="S26">Semaine S26</option>
+              <option value="S27" selected>Semaine S27</option><option value="S28">Semaine S28</option>
+              <option value="MOIS-06">Mois de Juin 2026</option><option value="MOIS-07">Mois de Juillet 2026</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Origine de la facture</label>
+            <select id="saisieOrigine">
+              <option value="Manuel">Saisie Manuelle</option>
+              <option value="Automatique Metro">🔄 Synchro Auto Metro</option>
+              <option value="Automatique Maxi">🔄 Synchro Auto Maxi Distrib</option>
+            </select>
+          </div>
+          <div class="field"><label>Fournisseur</label><select id="saisieFour"><option value="Maxi Distrib">Maxi Distrib</option><option value="Metro">Metro</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Référence / BL</label><input type="text" id="saisieRef" placeholder="ex: FAC-998" required></div>
+          <div class="field"><label>Montant HT (€)</label><input type="number" id="saisieMontant" step="0.01" required></div>
+        </div>
+        <button type="submit" class="btn btn-green" style="margin-top:10px">✅ Enregistrer la facture</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+let db = JSON.parse(localStorage.getItem('msck_v7_data')) || {
+  periodes: {
+    "S27": { 
+      ca: 22000, 
+      masseSalariale: 4620, 
+      factures: [
+        {origin: 'Automatique Maxi', fournisseur: 'Maxi Distrib', ref: 'FA-891 (Auto)', montant: 1450},
+        {origin: 'Manuel', fournisseur: 'Metro', ref: 'MET-102 (Oubli)', montant: 320}
+      ] 
+    }
+  }
+};
+
+let periodeActive = "S27";
+
+function verifierLogin() {
+  if(document.getElementById('pinCode').value === "1234") {
+    document.getElementById('loginOverlay').style.display = 'none';
+  } else { alert("Code incorrect (Essayez 1234)"); }
+}
+function logout() { document.getElementById('loginOverlay').style.display = 'flex'; }
+
+function getPeriodeData(p) {
+  if(!db.periodes[p]) db.periodes[p] = { ca: 20000, masseSalariale: 4200, factures: [] };
+  return db.periodes[p];
+}
+
+function changerPeriodeSelection() {
+  periodeActive = document.getElementById('selectSemaine').value;
+  document.getElementById('saisiePeriodeCible').value = periodeActive;
+  refreshUI();
+}
+
+function changerSemaine(sens) {
+  const select = document.getElementById('selectSemaine');
+  let idx = select.selectedIndex + sens;
+  if(idx >= 0 && idx < select.options.length) { select.selectedIndex = idx; changerPeriodeSelection(); }
+}
+
+function saveData() { localStorage.setItem('msck_v7_data', JSON.stringify(db)); refreshUI(); }
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const tabs = ['synthese','achats','salaires','saisie'];
+  const idx = tabs.indexOf(id);
+  if(idx !== -1) { document.querySelectorAll('.tab')[idx].classList.add('active'); document.getElementById('panel-'+id).classList.add('active'); }
+}
+
+function fmt(v) { return v.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' €'; }
+
+function refreshUI() {
+  const pData = getPeriodeData(periodeActive);
+  const ca = pData.ca;
+  const totalAchats = pData.factures.reduce((s, f) => s + f.montant, 0);
+  const pctAchats = ca > 0 ? (totalAchats / ca * 100) : 0;
+  const salReel = pData.masseSalariale;
+  const pctSal = ca > 0 ? (salReel / ca * 100) : 0;
+
+  document.getElementById('lblPeriodeSub').textContent = "Période active : " + periodeActive;
+  document.getElementById('synCA').textContent = fmt(ca);
+  document.getElementById('synAchats').textContent = fmt(totalAchats);
+  document.getElementById('synAchatsPct').textContent = pctAchats.toFixed(1) + '% du CA (Cible 30-35%)';
+
+  const badgeAchats = document.getElementById('badgeAchats');
+  if (pctAchats <= 30) { badgeAchats.className="badge-status status-ok"; badgeAchats.textContent="🟢 Optimal (≤30%)"; }
+  else if (pctAchats <= 35) { badgeAchats.className="badge-status status-warn"; badgeAchats.textContent="🟠 Vigilance (30-35%)"; }
+  else { badgeAchats.className="badge-status status-alert"; badgeAchats.textContent="🔴 Dépassement (>35%)"; }
+
+  document.getElementById('synSalaires').textContent = fmt(salReel);
+  document.getElementById('synSalairesPct').textContent = pctSal.toFixed(1) + '% du CA (Cible ≤21%)';
+
+  // Achats
+  document.getElementById('achatsCA').textContent = fmt(ca);
+  document.getElementById('achatsOpt').textContent = fmt(ca * 0.30);
+  document.getElementById('achatsMax').textContent = fmt(ca * 0.35);
+  document.getElementById('achatsTotal').textContent = fmt(totalAchats);
+
+  const tb = document.getElementById('tbodyAchats');
+  if(pData.factures.length === 0) {
+    tb.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#9E9E9E;padding:20px">Aucune facture pour ${periodeActive}</td></tr>`;
+  } else {
+    tb.innerHTML = pData.factures.map((f, i) => `
+      <tr>
+        <td><span class="badge ${f.origin.includes('Auto')?'badge-auto':'badge-max'}">${f.origin}</span></td>
+        <td><strong style="color:${f.fournisseur==='Maxi Distrib'?'var(--orange)':'var(--blue)'}">${f.fournisseur}</strong></td>
+        <td>${f.ref}</td>
+        <td class="num" style="font-weight:700">${fmt(f.montant)}</td>
+        <td class="center"><button class="btn btn-sm btn-gray" style="color:var(--red)" onclick="supprimerFacture(${i})" title="Supprimer cette facture">✕ Supprimer</button></td>
+      </tr>
+    `).join('');
+  }
+
+  document.getElementById('salCA').textContent = fmt(ca);
+  document.getElementById('salBudget21').textContent = fmt(ca * 0.21);
+  document.getElementById('salReel').textContent = fmt(salReel);
+  document.getElementById('inputMasseSalariale').value = salReel;
+  document.getElementById('inputCA').value = ca;
+}
+
+function saveCA() { getPeriodeData(periodeActive).ca = parseFloat(document.getElementById('inputCA').value) || 0; saveData(); }
+function saveSalairesPeriode() { getPeriodeData(periodeActive).masseSalariale = parseFloat(document.getElementById('inputMasseSalariale').value) || 0; saveData(); }
+
+function enregistrerFacture(e) {
+  e.preventDefault();
+  const cible = document.getElementById('saisiePeriodeCible').value;
+  const origin = document.getElementById('saisieOrigine').value;
+  const fournisseur = document.getElementById('saisieFour').value;
+  const ref = document.getElementById('saisieRef').value;
+  const montant = parseFloat(document.getElementById('saisieMontant').value);
+
+  if(!isNaN(montant) && montant > 0) {
+    getPeriodeData(cible).factures.push({origin, fournisseur, ref, montant});
+    saveData();
+    alert(`✅ Facture enregistrée dans ${cible} !`);
+    document.getElementById('saisieRef').value = '';
+    document.getElementById('saisieMontant').value = '';
+    showTab('achats');
+  }
+}
+
+function supprimerFacture(idx) {
+  if(confirm('Voulez-vous vraiment supprimer cette facture ?')) {
+    getPeriodeData(periodeActive).factures.splice(idx, 1);
+    saveData();
+  }
+}
+
+refreshUI();
+</script>
+</body>
+</html>
