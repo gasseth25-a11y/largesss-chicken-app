@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🛒 MSCK CHIC — Pilotage & Gestion des Factures</title>
+<title>🛒 MSCK CHIC — Pilotage & Factures v8.0</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#F4F6F9;color:#212121;font-size:13px}
@@ -89,8 +89,8 @@ td.center{text-align:center}
 
 <div class="header">
   <div>
-    <h1>🛒 MSCK CHIC — Pilotage & Factures</h1>
-    <div class="sub">Gestion et contrôle des factures (Manuelles & Automatiques)</div>
+    <h1>🛒 MSCK CHIC — Pilotage v8.0</h1>
+    <div class="sub">Gestion multi-semaines (S1 à S52) & Factures en direct</div>
   </div>
   <button class="btn btn-gray btn-sm" onclick="logout()">🔒 Verrouiller</button>
 </div>
@@ -109,14 +109,7 @@ td.center{text-align:center}
     <div style="flex:1;display:flex;gap:10px;align-items:center">
       <label style="font-weight:bold">Période :</label>
       <select id="selectSemaine" onchange="changerPeriodeSelection()">
-        <option value="S19">Semaine S19</option>
-        <option value="S20">Semaine S20</option>
-        <option value="S25">Semaine S25</option>
-        <option value="S26">Semaine S26</option>
-        <option value="S27" selected>Semaine S27 (Courante)</option>
-        <option value="S28">Semaine S28</option>
-        <option value="MOIS-06">Mois de Juin 2026</option>
-        <option value="MOIS-07">Mois de Juillet 2026</option>
+        <!-- Généré dynamiquement en JS pour S1 à S52 -->
       </select>
     </div>
     <button class="btn btn-gray btn-sm" onclick="changerSemaine(1)">Suivant ▶</button>
@@ -126,7 +119,7 @@ td.center{text-align:center}
     <div class="kpi teal">
       <label>Chiffre d'Affaires (Splash 360)</label>
       <div class="val" id="synCA">0 €</div>
-      <div class="sub" id="lblPeriodeSub">Période : S27</div>
+      <div class="sub" id="lblPeriodeSub">Période active</div>
     </div>
     <div class="kpi" id="kpiCardAchats">
       <label>Masse d'Achats / Marge Brute</label>
@@ -196,17 +189,14 @@ td.center{text-align:center}
   </div>
 
   <div class="card">
-    <div class="card-hdr">➕ Ajouter / Corriger une facture (Manuelle ou simulée Auto)</div>
+    <div class="card-hdr">➕ Ajouter / Corriger une facture (Manuelle ou Synchro Auto)</div>
     <div class="card-body">
       <form onsubmit="enregistrerFacture(event)">
         <div class="form-row">
           <div class="field">
             <label>Période cible</label>
             <select id="saisiePeriodeCible">
-              <option value="S19">Semaine S19</option><option value="S20">Semaine S20</option>
-              <option value="S25">Semaine S25</option><option value="S26">Semaine S26</option>
-              <option value="S27" selected>Semaine S27</option><option value="S28">Semaine S28</option>
-              <option value="MOIS-06">Mois de Juin 2026</option><option value="MOIS-07">Mois de Juillet 2026</option>
+              <!-- Rempli dynamiquement -->
             </select>
           </div>
           <div class="field">
@@ -230,20 +220,31 @@ td.center{text-align:center}
 </div>
 
 <script>
-let db = JSON.parse(localStorage.getItem('msck_v7_data')) || {
+let db = JSON.parse(localStorage.getItem('msck_v8_data')) || {
   periodes: {
     "S27": { 
       ca: 22000, 
       masseSalariale: 4620, 
-      factures: [
-        {origin: 'Automatique Maxi', fournisseur: 'Maxi Distrib', ref: 'FA-891 (Auto)', montant: 1450},
-        {origin: 'Manuel', fournisseur: 'Metro', ref: 'MET-102 (Oubli)', montant: 320}
-      ] 
+      factures: [] 
     }
   }
 };
 
 let periodeActive = "S27";
+
+// Initialisation des listes déroulantes de semaines (S1 à S52)
+function initSemainesOptions() {
+  let optionsHtml = "";
+  for(let i = 1; i <= 52; i++) {
+    let sVal = "S" + i;
+    optionsHtml += `<option value="${sVal}">Semaine ${sVal}</option>`;
+  }
+  optionsHtml += `<option value="MOIS-06">Mois de Juin 2026</option><option value="MOIS-07">Mois de Juillet 2026</option>`;
+  
+  document.getElementById('selectSemaine').innerHTML = optionsHtml;
+  document.getElementById('saisiePeriodeCible').innerHTML = optionsHtml;
+  document.getElementById('selectSemaine').value = periodeActive;
+}
 
 function verifierLogin() {
   if(document.getElementById('pinCode').value === "1234") {
@@ -269,7 +270,7 @@ function changerSemaine(sens) {
   if(idx >= 0 && idx < select.options.length) { select.selectedIndex = idx; changerPeriodeSelection(); }
 }
 
-function saveData() { localStorage.setItem('msck_v7_data', JSON.stringify(db)); refreshUI(); }
+function saveData() { localStorage.setItem('msck_v8_data', JSON.stringify(db)); refreshUI(); }
 function showTab(id) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -300,6 +301,10 @@ function refreshUI() {
 
   document.getElementById('synSalaires').textContent = fmt(salReel);
   document.getElementById('synSalairesPct').textContent = pctSal.toFixed(1) + '% du CA (Cible ≤21%)';
+
+  const badgeSalaires = document.getElementById('badgeSalaires');
+  if (pctSal <= 21) { badgeSalaires.className="badge-status status-ok"; badgeSalaires.textContent="🟢 Objectif atteint (≤21%)"; }
+  else { badgeSalaires.className="badge-status status-alert"; badgeSalaires.textContent="🔴 Trop haut (>21%)"; }
 
   // Achats
   document.getElementById('achatsCA').textContent = fmt(ca);
@@ -357,6 +362,8 @@ function supprimerFacture(idx) {
   }
 }
 
+// Lancement de l'initialisation
+initSemainesOptions();
 refreshUI();
 </script>
 </body>
