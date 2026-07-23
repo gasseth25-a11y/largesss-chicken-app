@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🛒 MSCK CHIC — Pilotage & Factures v10.0</title>
+<title>🛒 MSCK CHIC — Pilotage v12.0</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#F4F6F9;color:#212121;font-size:13px}
@@ -25,6 +25,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#F4F6F9;color:#212121;fo
 /* HEADER & TABS */
 .header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
 .header h1{font-size:18px;font-weight:700}
+.header .actions{display:flex;gap:8px}
 .tabs{background:#fff;border-bottom:2px solid var(--gray-l);display:flex;padding:0 16px;overflow-x:auto;gap:4px}
 .tab{padding:12px 14px;cursor:pointer;border-bottom:3px solid transparent;font-size:12px;font-weight:600;color:#757575;white-space:nowrap}
 .tab.active{color:var(--orange);border-bottom-color:var(--orange)}
@@ -38,6 +39,7 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#F4F6F9;color:#212121;fo
 .kpi.green{border-color:var(--green)}
 .kpi.red{border-color:var(--red)}
 .kpi.teal{border-color:var(--teal)}
+.kpi.purple{border-color:var(--purple)}
 .kpi label{font-size:10px;color:#757575;text-transform:uppercase;display:block;margin-bottom:4px}
 .kpi .val{font-size:22px;font-weight:700;color:#212121}
 .kpi .sub{font-size:10px;color:#9E9E9E;margin-top:2px}
@@ -71,6 +73,7 @@ td.center{text-align:center}
 .btn-orange{background:var(--orange);color:#fff}
 .btn-green{background:var(--green);color:#fff}
 .btn-gray{background:#ECEFF1;color:#37474F}
+.btn-purple{background:var(--purple);color:#fff}
 .btn-sm{padding:4px 8px;font-size:11px}
 .week-nav{display:flex;align-items:center;gap:8px;background:#fff;padding:10px 16px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px}
 .week-nav select{padding:6px 12px;border-radius:6px;border:1px solid #DDD;font-weight:bold;max-width:320px}
@@ -89,17 +92,20 @@ td.center{text-align:center}
 
 <div class="header">
   <div>
-    <h1>🛒 MSCK CHIC — Pilotage v10.0</h1>
-    <div class="sub">Gestion multi-semaines & Calendrier des factures</div>
+    <h1>🛒 MSCK CHIC — Pilotage v12.0</h1>
+    <div class="sub">Sauvegarde manuelle & Pilotage Salarial Combo</div>
   </div>
-  <button class="btn btn-gray btn-sm" onclick="logout()">🔒 Verrouiller</button>
+  <div class="actions">
+    <button class="btn btn-orange btn-sm" onclick="manuelSave()">💾 Sauvegarder</button>
+    <button class="btn btn-gray btn-sm" onclick="logout()">🔒 Verrouiller</button>
+  </div>
 </div>
 
 <div class="tabs">
   <div class="tab active" onclick="showTab('synthese')">🎯 Synthèse & Période</div>
-  <div class="tab" onclick="showTab('achats')">📦 Suivi & Gestion Achats</div>
+  <div class="tab" onclick="showTab('achats')">📦 Suivi Achats & Marges</div>
   <div class="tab" onclick="showTab('salaires')">👥 Masse Salariale (≤ 21%)</div>
-  <div class="tab" onclick="showTab('saisie')">➕ Ajouter une Facture</div>
+  <div class="tab" onclick="showTab('saisie')">➕ Ajouter Facture & CA</div>
 </div>
 
 <!-- SYNTHÈSE -->
@@ -108,23 +114,21 @@ td.center{text-align:center}
     <button class="btn btn-gray btn-sm" onclick="changerSemaine(-1)">◀ Précédent</button>
     <div style="flex:1;display:flex;gap:10px;align-items:center">
       <label style="font-weight:bold">Période :</label>
-      <select id="selectSemaine" onchange="changerPeriodeSelection()">
-        <!-- Généré en JS -->
-      </select>
+      <select id="selectSemaine" onchange="changerPeriodeSelection()"></select>
     </div>
     <button class="btn btn-gray btn-sm" onclick="changerSemaine(1)">Suivant ▶</button>
   </div>
 
   <div class="kpi-row">
     <div class="kpi teal">
-      <label>Chiffre d'Affaires (Splash 360)</label>
+      <label>Chiffre d'Affaires Prévu / Réel</label>
       <div class="val" id="synCA">0 €</div>
       <div class="sub" id="lblPeriodeSub">Période active</div>
     </div>
     <div class="kpi" id="kpiCardAchats">
-      <label>Masse d'Achats / Marge Brute</label>
+      <label>Total Dépensé & % Marge Brute</label>
       <div class="val" id="synAchats">0 €</div>
-      <div class="sub" id="synAchatsPct">0% du CA (Cible : 30 - 35%)</div>
+      <div class="sub" id="synAchatsPct">0% du CA (Cible : 30-35%)</div>
       <div id="badgeAchats" class="badge-status status-ok">En attente</div>
     </div>
     <div class="kpi" id="kpiCardSalaires">
@@ -140,9 +144,9 @@ td.center{text-align:center}
 <div class="panel" id="panel-achats">
   <div class="kpi-row">
     <div class="kpi teal"><label>CA Période</label><div class="val" id="achatsCA">0 €</div></div>
-    <div class="kpi green"><label>Seuil Optimal (30%)</label><div class="val" id="achatsOpt">0 €</div></div>
-    <div class="kpi red"><label>Seuil Limite (35%)</label><div class="val" id="achatsMax">0 €</div></div>
-    <div class="kpi orange"><label>Total Dépensé</label><div class="val" id="achatsTotal">0 €</div></div>
+    <div class="kpi orange"><label>Total Dépensé Achats</label><div class="val" id="achatsTotal">0 €</div><div class="sub" id="achatsPctSub">0% du CA</div></div>
+    <div class="kpi green"><label>Budget Optimal Restant (30%)</label><div class="val" id="achatsRestantOpt">0 €</div></div>
+    <div class="kpi red"><label>Budget Limite Restant (35%)</label><div class="val" id="achatsRestantMax">0 €</div></div>
   </div>
 
   <div class="card">
@@ -165,31 +169,46 @@ td.center{text-align:center}
   <div class="kpi-row">
     <div class="kpi teal"><label>CA Période</label><div class="val" id="salCA">0 €</div></div>
     <div class="kpi green"><label>Budget Salarial Max (21%)</label><div class="val" id="salBudget21">0 €</div></div>
-    <div class="kpi purple"><label>Masse Salariale Réelle</label><div class="val" id="salReel">0 €</div></div>
+    <div class="kpi purple"><label>Masse Salariale Réelle (Combo)</label><div class="val" id="salReel">0 €</div><div class="sub" id="salPctSub">0% du CA</div></div>
   </div>
   <div class="card">
-    <div class="card-hdr">👥 Ajuster la masse salariale</div>
+    <div class="card-hdr purple" style="background:var(--purple)">👥 Planification Heures & Masse Salariale (Combo App)</div>
     <div class="card-body">
       <div class="form-row">
-        <div class="field"><label>Masse salariale engagée (€)</label><input type="number" id="inputMasseSalariale" step="0.01" oninput="saveSalairesPeriode()"></div>
+        <div class="field">
+          <label>Nombre d'heures planifiées (Combo App)</label>
+          <input type="number" id="inputHeures" step="0.5" placeholder="ex: 240" oninput="calculerParHeures()">
+        </div>
+        <div class="field">
+          <label>Taux horaire chargé moyen (€ / h)</label>
+          <input type="number" id="inputTauxHoraire" step="0.5" value="17.50" oninput="calculerParHeures()">
+        </div>
+        <div class="field">
+          <label>Ou Masse salariale totale directe (€ HT)</label>
+          <input type="number" id="inputMasseSalariale" step="0.01" placeholder="ex: 4620.00" oninput="saveSalairesDirect()">
+        </div>
       </div>
+      <button class="btn btn-purple" onclick="manuelSave(); alert('Masse salariale sauvegardée !')">💾 Sauvegarder les données salariales</button>
     </div>
   </div>
 </div>
 
 <!-- SAISIE -->
 <div class="panel" id="panel-saisie">
-  <div class="card">
-    <div class="card-hdr">⚙️ Définir le CA de la période active</div>
+  <div class="card" style="border: 2px solid var(--orange);">
+    <div class="card-hdr orange" style="background:var(--orange)">⚡ Modification directe du Chiffre d'Affaires Prévu / Réel</div>
     <div class="card-body">
       <div class="form-row">
-        <div class="field"><label>Chiffre d'Affaires HT (€)</label><input type="number" id="inputCA" step="100" oninput="saveCA()"></div>
+        <div class="field">
+          <label>Chiffre d'Affaires HT pour la période sélectionnée (€)</label>
+          <input type="number" id="inputCA" step="100" placeholder="ex: 22000" oninput="saveCA()" style="font-size:15px; font-weight:bold; color:var(--orange)">
+        </div>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-hdr">➕ Ajouter / Corriger une facture (avec Date et Numéro)</div>
+    <div class="card-hdr">➕ Ajouter / Corriger une facture</div>
     <div class="card-body">
       <form onsubmit="enregistrerFacture(event)">
         <div class="form-row">
@@ -222,9 +241,11 @@ td.center{text-align:center}
 </div>
 
 <script>
-let db = JSON.parse(localStorage.getItem('msck_v10_data')) || {
+const STORAGE_KEY = 'msck_chic_global_db';
+
+let db = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
   periodes: {
-    "S27": { ca: 22000, masseSalariale: 4620, factures: [] }
+    "S27": { ca: 22000, masseSalariale: 4620, heures: 264, tauxHoraire: 17.50, factures: [] }
   }
 };
 
@@ -260,8 +281,6 @@ function initSemainesOptions() {
   document.getElementById('selectSemaine').innerHTML = optionsHtml;
   document.getElementById('saisiePeriodeCible').innerHTML = optionsHtml;
   document.getElementById('selectSemaine').value = periodeActive;
-  
-  // Mettre la date du jour par défaut dans le champ calendrier de saisie
   document.getElementById('saisieDateFacture').value = new Date().toISOString().slice(0, 10);
 }
 
@@ -273,7 +292,7 @@ function verifierLogin() {
 function logout() { document.getElementById('loginOverlay').style.display = 'flex'; }
 
 function getPeriodeData(p) {
-  if(!db.periodes[p]) db.periodes[p] = { ca: 20000, masseSalariale: 4200, factures: [] };
+  if(!db.periodes[p]) db.periodes[p] = { ca: 20000, masseSalariale: 4200, heures: 240, tauxHoraire: 17.50, factures: [] };
   return db.periodes[p];
 }
 
@@ -289,7 +308,16 @@ function changerSemaine(sens) {
   if(idx >= 0 && idx < select.options.length) { select.selectedIndex = idx; changerPeriodeSelection(); }
 }
 
-function saveData() { localStorage.setItem('msck_v10_data', JSON.stringify(db)); refreshUI(); }
+function saveData() { 
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); 
+  refreshUI(); 
+}
+
+function manuelSave() {
+  saveData();
+  alert("💾 Données sauvegardées avec succès !");
+}
+
 function showTab(id) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
@@ -331,19 +359,21 @@ function refreshUI() {
   if (pctSal <= 21) { badgeSalaires.className="badge-status status-ok"; badgeSalaires.textContent="🟢 Objectif atteint (≤21%)"; }
   else { badgeSalaires.className="badge-status status-alert"; badgeSalaires.textContent="🔴 Trop haut (>21%)"; }
 
-  // Achats
+  // Achats & Budgets restants
   document.getElementById('achatsCA').textContent = fmt(ca);
-  document.getElementById('achatsOpt').textContent = fmt(ca * 0.30);
-  document.getElementById('achatsMax').textContent = fmt(ca * 0.35);
   document.getElementById('achatsTotal').textContent = fmt(totalAchats);
+  document.getElementById('achatsPctSub').textContent = pctAchats.toFixed(1) + '% du CA';
+
+  let budgetOpt = (ca * 0.30) - totalAchats;
+  let budgetMax = (ca * 0.35) - totalAchats;
+  document.getElementById('achatsRestantOpt').textContent = fmt(budgetOpt);
+  document.getElementById('achatsRestantMax').textContent = fmt(budgetMax);
 
   const tb = document.getElementById('tbodyAchats');
   if(pData.factures.length === 0) {
     tb.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#9E9E9E;padding:20px">Aucune facture pour ${activeText}</td></tr>`;
   } else {
-    // Trier par date décroissante
     let facturesTriees = [...pData.factures].sort((a,b) => (b.date || "").localeCompare(a.date || ""));
-    
     tb.innerHTML = facturesTriees.map((f, i) => `
       <tr>
         <td><strong>${f.date || '—'}</strong></td>
@@ -356,15 +386,43 @@ function refreshUI() {
     `).join('');
   }
 
+  // Salaires
   document.getElementById('salCA').textContent = fmt(ca);
   document.getElementById('salBudget21').textContent = fmt(ca * 0.21);
   document.getElementById('salReel').textContent = fmt(salReel);
+  document.getElementById('salPctSub').textContent = pctSal.toFixed(1) + '% du CA';
+  
   document.getElementById('inputMasseSalariale').value = salReel;
+  document.getElementById('inputHeures').value = pData.heures || "";
+  document.getElementById('inputTauxHoraire').value = pData.tauxHoraire || 17.50;
   document.getElementById('inputCA').value = ca;
 }
 
-function saveCA() { getPeriodeData(periodeActive).ca = parseFloat(document.getElementById('inputCA').value) || 0; saveData(); }
-function saveSalairesPeriode() { getPeriodeData(periodeActive).masseSalariale = parseFloat(document.getElementById('inputMasseSalariale').value) || 0; saveData(); }
+function saveCA() { 
+  getPeriodeData(periodeActive).ca = parseFloat(document.getElementById('inputCA').value) || 0; 
+  saveData(); 
+}
+
+function calculerParHeures() {
+  let heures = parseFloat(document.getElementById('inputHeures').value) || 0;
+  let taux = parseFloat(document.getElementById('inputTauxHoraire').value) || 17.50;
+  let totalSal = heures * taux;
+
+  let pData = getPeriodeData(periodeActive);
+  pData.heures = heures;
+  pData.tauxHoraire = taux;
+  pData.masseSalariale = totalSal;
+  
+  document.getElementById('inputMasseSalariale').value = totalSal.toFixed(2);
+  saveData();
+}
+
+function saveSalairesDirect() { 
+  let totalSal = parseFloat(document.getElementById('inputMasseSalariale').value) || 0;
+  let pData = getPeriodeData(periodeActive);
+  pData.masseSalariale = totalSal;
+  saveData(); 
+}
 
 function enregistrerFacture(e) {
   e.preventDefault();
@@ -378,7 +436,7 @@ function enregistrerFacture(e) {
   if(!isNaN(montant) && montant > 0) {
     getPeriodeData(cible).factures.push({date, origin, fournisseur, ref, montant});
     saveData();
-    alert(`✅ Facture du ${date} (${ref}) enregistrée dans ${cible} !`);
+    alert(`✅ Facture enregistrée dans ${cible} !`);
     document.getElementById('saisieRef').value = '';
     document.getElementById('saisieMontant').value = '';
     showTab('achats');
