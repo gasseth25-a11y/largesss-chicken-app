@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🛒 MSCK CHIC — Pilotage v13.0</title>
+<title>🛒 MSCK CHIC — Pilotage v16.0</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#F4F6F9;color:#212121;font-size:13px}
@@ -76,7 +76,7 @@ td.center{text-align:center}
 .btn-purple{background:var(--purple);color:#fff}
 .btn-sm{padding:4px 8px;font-size:11px}
 .week-nav{display:flex;align-items:center;gap:8px;background:#fff;padding:10px 16px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px}
-.week-nav select{padding:6px 12px;border-radius:6px;border:1px solid #DDD;font-weight:bold;max-width:320px}
+.week-nav select{padding:6px 12px;border-radius:6px;border:1px solid #DDD;font-weight:bold;max-width:280px}
 </style>
 </head>
 <body>
@@ -92,8 +92,8 @@ td.center{text-align:center}
 
 <div class="header">
   <div>
-    <h1>🛒 MSCK CHIC — Pilotage v13.0</h1>
-    <div class="sub">Récupération des données & Persistance unifiée</div>
+    <h1>🛒 MSCK CHIC — Pilotage v16.0</h1>
+    <div class="sub">Actualisation Auto & Manuelle unifiée</div>
   </div>
   <div class="actions">
     <button class="btn btn-orange btn-sm" onclick="manuelSave()">💾 Sauvegarder</button>
@@ -112,9 +112,10 @@ td.center{text-align:center}
 <div class="panel active" id="panel-synthese">
   <div class="week-nav">
     <button class="btn btn-gray btn-sm" onclick="changerSemaine(-1)">◀ Précédent</button>
-    <div style="flex:1;display:flex;gap:10px;align-items:center">
+    <div style="flex:1;display:flex;gap:8px;align-items:center">
       <label style="font-weight:bold">Période :</label>
       <select id="selectSemaine" onchange="changerPeriodeSelection()"></select>
+      <button class="btn btn-orange btn-sm" onclick="actualiserPeriode()" title="Forcer l'actualisation">🔄 Actualiser</button>
     </div>
     <button class="btn btn-gray btn-sm" onclick="changerSemaine(1)">Suivant ▶</button>
   </div>
@@ -241,14 +242,12 @@ td.center{text-align:center}
 </div>
 
 <script>
-// Clé principale et clés de secours pour récupérer les données des anciennes versions (V10, V11, V12)
 const STORAGE_KEY = 'msck_chic_global_db';
 const OLD_KEYS = ['msck_v10_data', 'msck_v11_data', 'msck_v12_data', 'msck_chic_data'];
 
 function recupererAnciennesDonnees() {
   let existing = localStorage.getItem(STORAGE_KEY);
   if (!existing) {
-    // Chercher dans les anciennes clés si des données existent
     for (let oldKey of OLD_KEYS) {
       let oldData = localStorage.getItem(oldKey);
       if (oldData) {
@@ -317,7 +316,12 @@ function getPeriodeData(p) {
 function changerPeriodeSelection() {
   periodeActive = document.getElementById('selectSemaine').value;
   document.getElementById('saisiePeriodeCible').value = periodeActive;
-  refreshUI();
+  refreshUI(); // Actualisation automatique instantanée
+}
+
+function actualiserPeriode() {
+  changerPeriodeSelection();
+  alert("🔄 Données actualisées pour la période " + periodeActive);
 }
 
 function changerSemaine(sens) {
