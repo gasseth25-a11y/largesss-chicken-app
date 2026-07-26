@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🛒 MSCK CHIC — Pilotage v16.0</title>
+<title>🛒 MSCK CHIC — Pilotage v17.0</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#F4F6F9;color:#212121;font-size:13px}
@@ -22,10 +22,16 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#F4F6F9;color:#212121;fo
 .login-box input{width:100%;padding:12px;margin-bottom:12px;border-radius:8px;border:1px solid #444;background:#222831;color:#fff;font-size:14px}
 .login-box button{width:100%;padding:12px;border:none;border-radius:8px;background:var(--orange);color:#fff;font-weight:bold;cursor:pointer}
 
-/* HEADER & TABS */
+/* HEADER */
 .header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
 .header h1{font-size:18px;font-weight:700}
 .header .actions{display:flex;gap:8px}
+
+/* GLOBAL WEEK SELECTOR BAR (PERMANENT) */
+.global-week-bar{background:#fff;padding:12px 16px;border-bottom:2px solid var(--orange-m);display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.global-week-bar select{padding:6px 12px;border-radius:6px;border:2px solid var(--orange);font-weight:bold;font-size:13px;color:#212121;background:#fff;max-width:300px;cursor:pointer}
+
+/* TABS */
 .tabs{background:#fff;border-bottom:2px solid var(--gray-l);display:flex;padding:0 16px;overflow-x:auto;gap:4px}
 .tab{padding:12px 14px;cursor:pointer;border-bottom:3px solid transparent;font-size:12px;font-weight:600;color:#757575;white-space:nowrap}
 .tab.active{color:var(--orange);border-bottom-color:var(--orange)}
@@ -75,8 +81,6 @@ td.center{text-align:center}
 .btn-gray{background:#ECEFF1;color:#37474F}
 .btn-purple{background:var(--purple);color:#fff}
 .btn-sm{padding:4px 8px;font-size:11px}
-.week-nav{display:flex;align-items:center;gap:8px;background:#fff;padding:10px 16px;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px}
-.week-nav select{padding:6px 12px;border-radius:6px;border:1px solid #DDD;font-weight:bold;max-width:280px}
 </style>
 </head>
 <body>
@@ -92,8 +96,8 @@ td.center{text-align:center}
 
 <div class="header">
   <div>
-    <h1>🛒 MSCK CHIC — Pilotage v16.0</h1>
-    <div class="sub">Actualisation Auto & Manuelle unifiée</div>
+    <h1>🛒 MSCK CHIC — Pilotage v17.0</h1>
+    <div class="sub">Séparation stricte par semaine & CA modifiable partout</div>
   </div>
   <div class="actions">
     <button class="btn btn-orange btn-sm" onclick="manuelSave()">💾 Sauvegarder</button>
@@ -101,8 +105,19 @@ td.center{text-align:center}
   </div>
 </div>
 
+<!-- BARRE GLOBALE DE SÉLECTION DE SEMAINE (VISIBLE SUR TOUS LES ONGLETS) -->
+<div class="global-week-bar">
+  <button class="btn btn-gray btn-sm" onclick="changerSemaine(-1)">◀ Semaine préc.</button>
+  <div style="display:flex;align-items:center;gap:8px">
+    <label style="font-weight:bold;color:var(--orange);text-transform:uppercase">📅 Période active :</label>
+    <select id="selectSemaine" onchange="changerPeriodeSelection()"></select>
+    <button class="btn btn-orange btn-sm" onclick="actualiserPeriode()" title="Forcer le rafraîchissement">🔄 Actualiser</button>
+  </div>
+  <button class="btn btn-gray btn-sm" onclick="changerSemaine(1)">Semaine suiv. ▶</button>
+</div>
+
 <div class="tabs">
-  <div class="tab active" onclick="showTab('synthese')">🎯 Synthèse & Période</div>
+  <div class="tab active" onclick="showTab('synthese')">🎯 Synthèse & Objectifs</div>
   <div class="tab" onclick="showTab('achats')">📦 Suivi Achats & Marges</div>
   <div class="tab" onclick="showTab('salaires')">👥 Masse Salariale (≤ 21%)</div>
   <div class="tab" onclick="showTab('saisie')">➕ Ajouter Facture & CA</div>
@@ -110,16 +125,6 @@ td.center{text-align:center}
 
 <!-- SYNTHÈSE -->
 <div class="panel active" id="panel-synthese">
-  <div class="week-nav">
-    <button class="btn btn-gray btn-sm" onclick="changerSemaine(-1)">◀ Précédent</button>
-    <div style="flex:1;display:flex;gap:8px;align-items:center">
-      <label style="font-weight:bold">Période :</label>
-      <select id="selectSemaine" onchange="changerPeriodeSelection()"></select>
-      <button class="btn btn-orange btn-sm" onclick="actualiserPeriode()" title="Forcer l'actualisation">🔄 Actualiser</button>
-    </div>
-    <button class="btn btn-gray btn-sm" onclick="changerSemaine(1)">Suivant ▶</button>
-  </div>
-
   <div class="kpi-row">
     <div class="kpi teal">
       <label>Chiffre d'Affaires Prévu / Réel</label>
@@ -139,12 +144,36 @@ td.center{text-align:center}
       <div id="badgeSalaires" class="badge-status status-ok">En attente</div>
     </div>
   </div>
+
+  <div class="card">
+    <div class="card-hdr">💡 Diagnostic rapide de la semaine sélectionnée</div>
+    <div class="card-body" id="diagnosticText" style="font-size:12px;line-height:1.6;color:#444">
+      Sélectionnez une semaine ci-dessus ou modifiez le CA pour voir le diagnostic.
+    </div>
+  </div>
 </div>
 
 <!-- ACHATS & GESTION FACTURES -->
 <div class="panel" id="panel-achats">
+  
+  <!-- MODIFICATION DIRECTE DU CA DANS L'ONGLET ACHATS -->
+  <div class="card" style="border: 2px solid var(--teal); margin-bottom: 16px;">
+    <div class="card-hdr teal" style="background:var(--teal); display:flex; justify-content:space-between; align-items:center;">
+      <span>⚡ Chiffre d'Affaires de la Semaine (Base de calcul de marge)</span>
+      <span style="font-size:10px; background:#fff; color:var(--teal); padding:2px 6px; border-radius:4px;">Modifiable directement</span>
+    </div>
+    <div class="card-body">
+      <div class="form-row" style="margin-bottom:0">
+        <div class="field">
+          <label style="color:var(--teal); font-weight:700;">Montant du CA Prévu ou Réel pour la période active (€ HT) :</label>
+          <input type="number" id="inputCA_achats" step="100" placeholder="Saisissez le CA de cette semaine (ex: 22000)..." oninput="saveCA('achats')" style="font-size:16px; font-weight:bold; color:var(--teal); border:2px solid var(--teal)">
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="kpi-row">
-    <div class="kpi teal"><label>CA Période</label><div class="val" id="achatsCA">0 €</div></div>
+    <div class="kpi teal"><label>CA Période Actuelle</label><div class="val" id="achatsCA">0 €</div></div>
     <div class="kpi orange"><label>Total Dépensé Achats</label><div class="val" id="achatsTotal">0 €</div><div class="sub" id="achatsPctSub">0% du CA</div></div>
     <div class="kpi green"><label>Budget Optimal Restant (30%)</label><div class="val" id="achatsRestantOpt">0 €</div></div>
     <div class="kpi red"><label>Budget Limite Restant (35%)</label><div class="val" id="achatsRestantMax">0 €</div></div>
@@ -201,8 +230,8 @@ td.center{text-align:center}
     <div class="card-body">
       <div class="form-row">
         <div class="field">
-          <label>Chiffre d'Affaires HT pour la période sélectionnée (€)</label>
-          <input type="number" id="inputCA" step="100" placeholder="ex: 22000" oninput="saveCA()" style="font-size:15px; font-weight:bold; color:var(--orange)">
+          <label>Chiffre d'Affaires HT pour la période active (€)</label>
+          <input type="number" id="inputCA_saisie" step="100" placeholder="ex: 22000" oninput="saveCA('saisie')" style="font-size:15px; font-weight:bold; color:var(--orange)">
         </div>
       </div>
     </div>
@@ -214,7 +243,7 @@ td.center{text-align:center}
       <form onsubmit="enregistrerFacture(event)">
         <div class="form-row">
           <div class="field">
-            <label>Période cible</label>
+            <label>Période cible de la facture</label>
             <select id="saisiePeriodeCible"></select>
           </div>
           <div class="field">
@@ -243,7 +272,7 @@ td.center{text-align:center}
 
 <script>
 const STORAGE_KEY = 'msck_chic_global_db';
-const OLD_KEYS = ['msck_v10_data', 'msck_v11_data', 'msck_v12_data', 'msck_chic_data'];
+const OLD_KEYS = ['msck_v10_data', 'msck_v11_data', 'msck_v12_data', 'msck_v16_data', 'msck_chic_data'];
 
 function recupererAnciennesDonnees() {
   let existing = localStorage.getItem(STORAGE_KEY);
@@ -257,7 +286,6 @@ function recupererAnciennesDonnees() {
     }
   }
 }
-
 recupererAnciennesDonnees();
 
 let db = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
@@ -308,20 +336,23 @@ function verifierLogin() {
 }
 function logout() { document.getElementById('loginOverlay').style.display = 'flex'; }
 
+// PRINCIPE CLÉ : Toute nouvelle semaine s'initialise à 0 € (pas de recopie !)
 function getPeriodeData(p) {
-  if(!db.periodes[p]) db.periodes[p] = { ca: 20000, masseSalariale: 4200, heures: 240, tauxHoraire: 17.50, factures: [] };
+  if(!db.periodes[p]) {
+    db.periodes[p] = { ca: 0, masseSalariale: 0, heures: 0, tauxHoraire: 17.50, factures: [] };
+  }
   return db.periodes[p];
 }
 
 function changerPeriodeSelection() {
   periodeActive = document.getElementById('selectSemaine').value;
   document.getElementById('saisiePeriodeCible').value = periodeActive;
-  refreshUI(); // Actualisation automatique instantanée
+  refreshUI(); // Actualisation automatique instantanée sur tous les onglets !
 }
 
 function actualiserPeriode() {
   changerPeriodeSelection();
-  alert("🔄 Données actualisées pour la période " + periodeActive);
+  alert("🔄 Données actualisées avec succès pour : " + periodeActive);
 }
 
 function changerSemaine(sens) {
@@ -352,10 +383,10 @@ function fmt(v) { return v.toLocaleString('fr-FR', {minimumFractionDigits: 2, ma
 
 function refreshUI() {
   const pData = getPeriodeData(periodeActive);
-  const ca = pData.ca;
+  const ca = pData.ca || 0;
   const totalAchats = pData.factures.reduce((s, f) => s + f.montant, 0);
   const pctAchats = ca > 0 ? (totalAchats / ca * 100) : 0;
-  const salReel = pData.masseSalariale;
+  const salReel = pData.masseSalariale || 0;
   const pctSal = ca > 0 ? (salReel / ca * 100) : 0;
 
   let selectEl = document.getElementById('selectSemaine');
@@ -381,6 +412,16 @@ function refreshUI() {
   if (pctSal <= 21) { badgeSalaires.className="badge-status status-ok"; badgeSalaires.textContent="🟢 Objectif atteint (≤21%)"; }
   else { badgeSalaires.className="badge-status status-alert"; badgeSalaires.textContent="🔴 Trop haut (>21%)"; }
 
+  // Diagnostic
+  let diagText = `<strong>Bilan pour ${activeText} :</strong><br>`;
+  if (ca === 0) {
+    diagText += `⚠️ <em>Aucun Chiffre d'Affaires renseigné pour cette semaine. Veuillez saisir votre CA ci-dessus ou dans l'onglet Achats pour calculer vos marges.</em>`;
+  } else {
+    diagText += `- Achats : <strong>${pctAchats.toFixed(1)}%</strong> du CA (${fmt(totalAchats)} sur ${fmt(ca)}).<br>`;
+    diagText += `- Salaires : <strong>${pctSal.toFixed(1)}%</strong> du CA (${fmt(salReel)} sur ${fmt(ca)}).`;
+  }
+  document.getElementById('diagnosticText').innerHTML = diagText;
+
   // Achats & Budgets restants
   document.getElementById('achatsCA').textContent = fmt(ca);
   document.getElementById('achatsTotal').textContent = fmt(totalAchats);
@@ -391,9 +432,13 @@ function refreshUI() {
   document.getElementById('achatsRestantOpt').textContent = fmt(budgetOpt);
   document.getElementById('achatsRestantMax').textContent = fmt(budgetMax);
 
+  // Synchronisation des champs CA dans l'onglet Achats et Saisie
+  document.getElementById('inputCA_achats').value = ca > 0 ? ca : "";
+  document.getElementById('inputCA_saisie').value = ca > 0 ? ca : "";
+
   const tb = document.getElementById('tbodyAchats');
   if(pData.factures.length === 0) {
-    tb.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#9E9E9E;padding:20px">Aucune facture pour ${activeText}</td></tr>`;
+    tb.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#9E9E9E;padding:20px">Aucune facture enregistrée pour ${activeText}</td></tr>`;
   } else {
     let facturesTriees = [...pData.factures].sort((a,b) => (b.date || "").localeCompare(a.date || ""));
     tb.innerHTML = facturesTriees.map((f, i) => `
@@ -414,14 +459,22 @@ function refreshUI() {
   document.getElementById('salReel').textContent = fmt(salReel);
   document.getElementById('salPctSub').textContent = pctSal.toFixed(1) + '% du CA';
   
-  document.getElementById('inputMasseSalariale').value = salReel;
-  document.getElementById('inputHeures').value = pData.heures || "";
+  document.getElementById('inputMasseSalariale').value = salReel > 0 ? salReel : "";
+  document.getElementById('inputHeures').value = pData.heures > 0 ? pData.heures : "";
   document.getElementById('inputTauxHoraire').value = pData.tauxHoraire || 17.50;
-  document.getElementById('inputCA').value = ca;
 }
 
-function saveCA() { 
-  getPeriodeData(periodeActive).ca = parseFloat(document.getElementById('inputCA').value) || 0; 
+// Enregistrement du CA spécifique à la semaine active (sans toucher aux autres !)
+function saveCA(source) { 
+  let val = 0;
+  if (source === 'achats') {
+    val = parseFloat(document.getElementById('inputCA_achats').value) || 0;
+    document.getElementById('inputCA_saisie').value = val > 0 ? val : "";
+  } else {
+    val = parseFloat(document.getElementById('inputCA_saisie').value) || 0;
+    document.getElementById('inputCA_achats').value = val > 0 ? val : "";
+  }
+  getPeriodeData(periodeActive).ca = val; 
   saveData(); 
 }
 
@@ -435,7 +488,7 @@ function calculerParHeures() {
   pData.tauxHoraire = taux;
   pData.masseSalariale = totalSal;
   
-  document.getElementById('inputMasseSalariale').value = totalSal.toFixed(2);
+  document.getElementById('inputMasseSalariale').value = totalSal > 0 ? totalSal.toFixed(2) : "";
   saveData();
 }
 
@@ -458,7 +511,7 @@ function enregistrerFacture(e) {
   if(!isNaN(montant) && montant > 0) {
     getPeriodeData(cible).factures.push({date, origin, fournisseur, ref, montant});
     saveData();
-    alert(`✅ Facture enregistrée dans ${cible} !`);
+    alert(`✅ Facture enregistrée dans la période ${cible} !`);
     document.getElementById('saisieRef').value = '';
     document.getElementById('inputMontant').value = '';
     showTab('achats');
