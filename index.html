@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🛒 MSCK CHIC — Pilotage v17.0</title>
+<title>🛒 MSCK CHIC — Pilotage v18.0 Master</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Segoe UI',Arial,sans-serif;background:#F4F6F9;color:#212121;font-size:13px}
@@ -12,50 +12,57 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#F4F6F9;color:#212121;fo
   --blue:#1565C0;--blue-l:#E3F2FD;
   --green:#2E7D32;--green-l:#E8F5E9;
   --red:#C62828;--red-l:#FFEBEE;
-  --purple:#6A1B9A;--teal:#00796B;--gray:#37474F;--gray-l:#ECEFF1;
+  --purple:#6A1B9A;--purple-l:#F3E5F5;
+  --teal:#00796B;--teal-l:#E0F2F1;
+  --gray:#37474F;--gray-l:#ECEFF1;
 }
 
-/* LOGIN */
-#loginOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#1a1a2e;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px}
+/* MODALES & LOGIN */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(26,26,46,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal-box{background:#fff;padding:24px;border-radius:15px;width:100%;max-width:420px;box-shadow:0 10px 30px rgba(0,0,0,0.4);color:#212121}
+.modal-box h2{margin-bottom:16px;font-size:18px;color:var(--orange);border-bottom:2px solid var(--orange-l);padding-bottom:8px}
+
 .login-box{background:#16213e;padding:30px;border-radius:15px;width:100%;max-width:380px;box-shadow:0 10px 30px rgba(0,0,0,0.5);text-align:center;color:#fff}
-.login-box h2{margin-bottom:20px;font-size:22px;color:var(--orange)}
+.login-box h2{margin-bottom:20px;font-size:22px;color:var(--orange);border:none}
 .login-box input{width:100%;padding:12px;margin-bottom:12px;border-radius:8px;border:1px solid #444;background:#222831;color:#fff;font-size:14px}
 .login-box button{width:100%;padding:12px;border:none;border-radius:8px;background:var(--orange);color:#fff;font-weight:bold;cursor:pointer}
 
-/* HEADER */
+/* HEADER & GLOBAL NAV */
 .header{background:linear-gradient(135deg,#1a1a2e 0%,#16213e 100%);color:#fff;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
 .header h1{font-size:18px;font-weight:700}
 .header .actions{display:flex;gap:8px}
-
-/* GLOBAL WEEK SELECTOR BAR (PERMANENT) */
-.global-week-bar{background:#fff;padding:12px 16px;border-bottom:2px solid var(--orange-m);display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 2px 6px rgba(0,0,0,.04)}
-.global-week-bar select{padding:6px 12px;border-radius:6px;border:2px solid var(--orange);font-weight:bold;font-size:13px;color:#212121;background:#fff;max-width:300px;cursor:pointer}
+.global-week-bar{background:#fff;padding:12px 16px;border-bottom:2px solid var(--orange-m);display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 2px 6px rgba(0,0,0,.04);flex-wrap:wrap}
+.global-week-bar select{padding:6px 12px;border-radius:6px;border:2px solid var(--orange);font-weight:bold;font-size:13px;color:#212121;background:#fff;max-width:280px;cursor:pointer}
 
 /* TABS */
 .tabs{background:#fff;border-bottom:2px solid var(--gray-l);display:flex;padding:0 16px;overflow-x:auto;gap:4px}
-.tab{padding:12px 14px;cursor:pointer;border-bottom:3px solid transparent;font-size:12px;font-weight:600;color:#757575;white-space:nowrap}
+.tab{padding:12px 14px;cursor:pointer;border-bottom:3px solid transparent;font-size:12px;font-weight:600;color:#757575;white-space:nowrap;transition:all .2s}
 .tab.active{color:var(--orange);border-bottom-color:var(--orange)}
 
 /* PANELS & CARDS */
 .panel{display:none;padding:16px}
 .panel.active{display:block}
-.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
-.kpi{background:#fff;border-radius:10px;padding:14px 16px;box-shadow:0 2px 6px rgba(0,0,0,.06);border-left:4px solid var(--orange)}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:#fff;border-radius:10px;padding:14px 16px;box-shadow:0 2px 6px rgba(0,0,0,.06);border-left:4px solid var(--orange);display:flex;flex-direction:column;justify-content:space-between}
 .kpi.blue{border-color:var(--blue)}
 .kpi.green{border-color:var(--green)}
 .kpi.red{border-color:var(--red)}
 .kpi.teal{border-color:var(--teal)}
 .kpi.purple{border-color:var(--purple)}
-.kpi label{font-size:10px;color:#757575;text-transform:uppercase;display:block;margin-bottom:4px}
+.kpi label{font-size:10px;color:#757575;text-transform:uppercase;display:block;margin-bottom:4px;font-weight:bold}
 .kpi .val{font-size:22px;font-weight:700;color:#212121}
-.kpi .sub{font-size:10px;color:#9E9E9E;margin-top:2px}
-.badge-status{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:bold;margin-top:4px}
+.kpi .sub{font-size:10px;color:#757575;margin-top:4px}
+.badge-status{display:inline-block;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:bold;margin-top:6px;width:fit-content}
 .status-ok{background:var(--green-l);color:var(--green)}
 .status-warn{background:var(--orange-l);color:var(--orange)}
 .status-alert{background:var(--red-l);color:var(--red)}
 
+/* JAUGES GRAPHIQUES (PROGRESS BARS) */
+.gauge-container{width:100%;background:#ECEFF1;border-radius:6px;height:8px;margin-top:8px;overflow:hidden;position:relative}
+.gauge-fill{height:100%;border-radius:6px;transition:width 0.4s ease, background 0.4s ease}
+
 .card{background:#fff;border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.06);margin-bottom:16px;overflow:hidden}
-.card-hdr{background:var(--gray);color:#fff;padding:12px 16px;font-weight:700;font-size:12px}
+.card-hdr{background:var(--gray);color:#fff;padding:12px 16px;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:space-between}
 .card-body{padding:16px}
 
 /* TABLES */
@@ -70,34 +77,74 @@ td.center{text-align:center}
 .badge-metro{background:var(--blue-l);color:var(--blue)}
 .badge-auto{background:#E0F7FA;color:#006064}
 
-/* FORMS & NAV */
-.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:12px}
+/* FORMS & BUTTONS */
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:12px}
 .field{display:flex;flex-direction:column;gap:4px}
 .field label{font-size:11px;font-weight:600;color:#555}
 .field input, .field select{padding:8px 10px;border:1px solid #DDD;border-radius:6px;font-size:12px;outline:none;background:#fff}
-.btn{padding:8px 14px;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.field input:focus, .field select:focus{border-color:var(--orange);box-shadow:0 0 0 2px rgba(255,140,0,.15)}
+.btn{padding:8px 14px;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;display:inline-flex;align-items:center;gap:6px;text-decoration:none}
 .btn-orange{background:var(--orange);color:#fff}
 .btn-green{background:var(--green);color:#fff}
+.btn-blue{background:var(--blue);color:#fff}
 .btn-gray{background:#ECEFF1;color:#37474F}
 .btn-purple{background:var(--purple);color:#fff}
-.btn-sm{padding:4px 8px;font-size:11px}
+.btn-sm{padding:5px 10px;font-size:11px}
 </style>
 </head>
 <body>
 
-<div id="loginOverlay">
+<!-- ÉCRAN DE SÉCURITÉ -->
+<div id="loginOverlay" class="modal-overlay">
   <div class="login-box">
     <h2>🔐 MSCK CHIC - Sécurité</h2>
-    <p style="font-size:12px;color:#B0BEC5;margin-bottom:15px">Entrez le code d'accès</p>
+    <p style="font-size:12px;color:#B0BEC5;margin-bottom:15px">Entrez votre code d'accès</p>
     <input type="password" id="pinCode" placeholder="Code secret (ex: 1234)">
     <button onclick="verifierLogin()">Se connecter</button>
   </div>
 </div>
 
+<!-- MODALE DE MODIFICATION DE FACTURE -->
+<div id="editModal" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <h2>✏️ Modifier la facture</h2>
+    <form onsubmit="sauvegarderModificationFacture(event)">
+      <div class="form-row">
+        <div class="field">
+          <label>Date</label>
+          <input type="date" id="editDate" required>
+        </div>
+        <div class="field">
+          <label>Fournisseur</label>
+          <select id="editFour">
+            <option value="Maxi Distrib">Maxi Distrib</option>
+            <option value="Metro">Metro</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>N° de Facture / Référence</label>
+          <input type="text" id="editRef" required>
+        </div>
+        <div class="field">
+          <label>Montant HT (€)</label>
+          <input type="number" id="editMontant" step="0.01" required>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+        <button type="button" class="btn btn-gray" onclick="fermerModaleEdit()">Annuler</button>
+        <button type="submit" class="btn btn-green">✅ Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- EN-TÊTE -->
 <div class="header">
   <div>
-    <h1>🛒 MSCK CHIC — Pilotage v17.0</h1>
-    <div class="sub">Séparation stricte par semaine & CA modifiable partout</div>
+    <h1>🛒 MSCK CHIC — Master BI v18.0</h1>
+    <div class="sub">Drill-Down Hebdomadaire & Modification totale en 1 clic</div>
   </div>
   <div class="actions">
     <button class="btn btn-orange btn-sm" onclick="manuelSave()">💾 Sauvegarder</button>
@@ -105,68 +152,147 @@ td.center{text-align:center}
   </div>
 </div>
 
-<!-- BARRE GLOBALE DE SÉLECTION DE SEMAINE (VISIBLE SUR TOUS LES ONGLETS) -->
+<!-- BARRE PERMANENTE DE SÉLECTION DE SEMAINE -->
 <div class="global-week-bar">
   <button class="btn btn-gray btn-sm" onclick="changerSemaine(-1)">◀ Semaine préc.</button>
   <div style="display:flex;align-items:center;gap:8px">
-    <label style="font-weight:bold;color:var(--orange);text-transform:uppercase">📅 Période active :</label>
+    <label style="font-weight:bold;color:var(--orange);text-transform:uppercase">📅 Semaine Active :</label>
     <select id="selectSemaine" onchange="changerPeriodeSelection()"></select>
-    <button class="btn btn-orange btn-sm" onclick="actualiserPeriode()" title="Forcer le rafraîchissement">🔄 Actualiser</button>
+    <button class="btn btn-orange btn-sm" onclick="actualiserPeriode()" title="Rafraîchir">🔄 Actualiser</button>
   </div>
   <button class="btn btn-gray btn-sm" onclick="changerSemaine(1)">Semaine suiv. ▶</button>
 </div>
 
+<!-- ONGLETS -->
 <div class="tabs">
-  <div class="tab active" onclick="showTab('synthese')">🎯 Synthèse & Objectifs</div>
-  <div class="tab" onclick="showTab('achats')">📦 Suivi Achats & Marges</div>
+  <div class="tab active" onclick="showTab('synthese')">🎯 Synthèse & Drill-Down Mensuel</div>
+  <div class="tab" onclick="showTab('achats')">📦 Suivi Achats (30-35%)</div>
   <div class="tab" onclick="showTab('salaires')">👥 Masse Salariale (≤ 21%)</div>
-  <div class="tab" onclick="showTab('saisie')">➕ Ajouter Facture & CA</div>
+  <div class="tab" onclick="showTab('saisie')">➕ Saisie & Ajout Facture</div>
 </div>
 
-<!-- SYNTHÈSE -->
+<!-- ==================== ONGLET 1 : SYNTHÈSE & DRILL-DOWN MENSUEL ==================== -->
 <div class="panel active" id="panel-synthese">
+  
+  <div style="font-weight:bold;font-size:14px;color:var(--gray);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+    <span>📌 1. Vue instantanée de la semaine sélectionnée (<span id="lblSemaineTitre" style="color:var(--orange)">S27</span>)</span>
+  </div>
+
   <div class="kpi-row">
     <div class="kpi teal">
-      <label>Chiffre d'Affaires Prévu / Réel</label>
-      <div class="val" id="synCA">0 €</div>
-      <div class="sub" id="lblPeriodeSub">Période active</div>
+      <div>
+        <label>Chiffre d'Affaires Hebdo</label>
+        <div class="val" id="synCA">0 €</div>
+      </div>
+      <div class="sub">Base de référence semaine</div>
     </div>
+    
     <div class="kpi" id="kpiCardAchats">
-      <label>Total Dépensé & % Marge Brute</label>
-      <div class="val" id="synAchats">0 €</div>
-      <div class="sub" id="synAchatsPct">0% du CA (Cible : 30-35%)</div>
-      <div id="badgeAchats" class="badge-status status-ok">En attente</div>
+      <div>
+        <label>Achats / Marge Brute Hebdo</label>
+        <div class="val" id="synAchats">0 €</div>
+        <div class="sub" id="synAchatsPct">0% du CA (Cible 30-35%)</div>
+      </div>
+      <div>
+        <div class="gauge-container"><div class="gauge-fill" id="gaugeAchats"></div></div>
+        <div id="badgeAchats" class="badge-status status-ok">En attente</div>
+      </div>
     </div>
+
     <div class="kpi" id="kpiCardSalaires">
-      <label>Masse Salariale (Combo)</label>
-      <div class="val" id="synSalaires">0 €</div>
-      <div class="sub" id="synSalairesPct">0% du CA (Cible : ≤ 21%)</div>
-      <div id="badgeSalaires" class="badge-status status-ok">En attente</div>
+      <div>
+        <label>Masse Salariale Hebdo</label>
+        <div class="val" id="synSalaires">0 €</div>
+        <div class="sub" id="synSalairesPct">0% du CA (Cible ≤ 21%)</div>
+      </div>
+      <div>
+        <div class="gauge-container"><div class="gauge-fill" id="gaugeSalaires"></div></div>
+        <div id="badgeSalaires" class="badge-status status-ok">En attente</div>
+      </div>
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-hdr">💡 Diagnostic rapide de la semaine sélectionnée</div>
-    <div class="card-body" id="diagnosticText" style="font-size:12px;line-height:1.6;color:#444">
-      Sélectionnez une semaine ci-dessus ou modifiez le CA pour voir le diagnostic.
+  <hr style="border:none;border-top:2px dashed var(--gray-l);margin:20px 0">
+
+  <!-- MODULE DE DRILL-DOWN MENSUEL -->
+  <div class="card" style="border:2px solid var(--blue)">
+    <div class="card-hdr blue" style="background:var(--blue);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <span style="font-size:14px">📅 2. Analyse Mensuelle & Drill-Down (Répartition par semaine)</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <label style="font-size:11px;color:#fff">Sélectionner un Mois :</label>
+        <select id="selectMoisSynthese" onchange="rafraichirMois()" style="padding:4px 8px;border-radius:4px;font-weight:bold;color:#212121">
+          <option value="Janvier">Janvier 2026 (S1 - S4)</option>
+          <option value="Février">Février 2026 (S5 - S8)</option>
+          <option value="Mars">Mars 2026 (S9 - S13)</option>
+          <option value="Avril">Avril 2026 (S14 - S17)</option>
+          <option value="Mai">Mai 2026 (S18 - S22)</option>
+          <option value="Juin">Juin 2026 (S23 - S26)</option>
+          <option value="Juillet" selected>Juillet 2026 (S27 - S31)</option>
+          <option value="Août">Août 2026 (S32 - S35)</option>
+          <option value="Septembre">Septembre 2026 (S36 - S39)</option>
+          <option value="Octobre">Octobre 2026 (S40 - S43)</option>
+          <option value="Novembre">Novembre 2026 (S44 - S48)</option>
+          <option value="Décembre">Décembre 2026 (S49 - S52)</option>
+        </select>
+      </div>
+    </div>
+    <div class="card-body">
+      
+      <!-- CUMUL MENSUEL -->
+      <div style="background:var(--blue-l);padding:14px;border-radius:8px;margin-bottom:16px">
+        <div style="font-weight:bold;color:var(--blue);margin-bottom:8px;font-size:13px">🏆 BILAN CUMULÉ DU MOIS SÉLECTIONNÉ :</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px">
+          <div><span style="font-size:11px;color:#555">CA Total Mensuel :</span><br><strong style="font-size:18px;color:#212121" id="moisCA">0 €</strong></div>
+          <div>
+            <span style="font-size:11px;color:#555">Achats Mensuels :</span><br>
+            <strong style="font-size:16px" id="moisAchatsVal">0 €</strong> (<span id="moisAchatsPct" style="font-weight:bold">0%</span>)
+            <div id="moisAchatsBadge" class="badge-status status-ok" style="margin-top:2px">OK</div>
+          </div>
+          <div>
+            <span style="font-size:11px;color:#555">Salaires Mensuels :</span><br>
+            <strong style="font-size:16px" id="moisSalVal">0 €</strong> (<span id="moisSalPct" style="font-weight:bold">0%</span>)
+            <div id="moisSalBadge" class="badge-status status-ok" style="margin-top:2px">OK</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLEAU DRILL-DOWN PAR SEMAINE DU MOIS -->
+      <div style="font-weight:bold;margin-bottom:8px;color:var(--gray)">🔍 Détail et respect des objectifs pour chaque semaine du mois :</div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>Semaine</th>
+              <th>Dates</th>
+              <th style="text-align:right">CA Prévu / Réel</th>
+              <th>Achats / Marge (Cible 30-35%)</th>
+              <th>Masse Salariale (Cible ≤ 21%)</th>
+              <th class="center">Action</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyDrillDown">
+            <tr><td colspan="6" style="text-align:center;color:#9E9E9E;padding:20px">Chargement des semaines du mois...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </div>
 </div>
 
-<!-- ACHATS & GESTION FACTURES -->
+<!-- ==================== ONGLET 2 : SUIVI ACHATS ==================== -->
 <div class="panel" id="panel-achats">
   
-  <!-- MODIFICATION DIRECTE DU CA DANS L'ONGLET ACHATS -->
   <div class="card" style="border: 2px solid var(--teal); margin-bottom: 16px;">
-    <div class="card-hdr teal" style="background:var(--teal); display:flex; justify-content:space-between; align-items:center;">
-      <span>⚡ Chiffre d'Affaires de la Semaine (Base de calcul de marge)</span>
-      <span style="font-size:10px; background:#fff; color:var(--teal); padding:2px 6px; border-radius:4px;">Modifiable directement</span>
+    <div class="card-hdr teal" style="background:var(--teal)">
+      <span>⚡ Chiffre d'Affaires de la Semaine Active (Base de calcul)</span>
+      <span style="font-size:10px; background:#fff; color:var(--teal); padding:2px 6px; border-radius:4px;">Modifiable en direct</span>
     </div>
     <div class="card-body">
       <div class="form-row" style="margin-bottom:0">
         <div class="field">
-          <label style="color:var(--teal); font-weight:700;">Montant du CA Prévu ou Réel pour la période active (€ HT) :</label>
-          <input type="number" id="inputCA_achats" step="100" placeholder="Saisissez le CA de cette semaine (ex: 22000)..." oninput="saveCA('achats')" style="font-size:16px; font-weight:bold; color:var(--teal); border:2px solid var(--teal)">
+          <label style="color:var(--teal); font-weight:700;">Montant du CA Prévu ou Réel pour cette semaine (€ HT) :</label>
+          <input type="number" id="inputCA_achats" step="100" placeholder="ex: 22000" oninput="saveCA('achats')" style="font-size:16px; font-weight:bold; color:var(--teal); border:2px solid var(--teal)">
         </div>
       </div>
     </div>
@@ -180,7 +306,7 @@ td.center{text-align:center}
   </div>
 
   <div class="card">
-    <div class="card-hdr">📦 Liste des factures de la période active</div>
+    <div class="card-hdr">📦 Liste des factures de la période active (Modifiables & Supprimables)</div>
     <div class="card-body" style="padding:0">
       <table>
         <thead>
@@ -194,7 +320,7 @@ td.center{text-align:center}
   </div>
 </div>
 
-<!-- MASSE SALARIALE -->
+<!-- ==================== ONGLET 3 : MASSE SALARIALE ==================== -->
 <div class="panel" id="panel-salaires">
   <div class="kpi-row">
     <div class="kpi teal"><label>CA Période</label><div class="val" id="salCA">0 €</div></div>
@@ -223,7 +349,7 @@ td.center{text-align:center}
   </div>
 </div>
 
-<!-- SAISIE -->
+<!-- ==================== ONGLET 4 : SAISIE ==================== -->
 <div class="panel" id="panel-saisie">
   <div class="card" style="border: 2px solid var(--orange);">
     <div class="card-hdr orange" style="background:var(--orange)">⚡ Modification directe du Chiffre d'Affaires Prévu / Réel</div>
@@ -238,7 +364,7 @@ td.center{text-align:center}
   </div>
 
   <div class="card">
-    <div class="card-hdr">➕ Ajouter / Corriger une facture</div>
+    <div class="card-hdr">➕ Ajouter une facture à la période active</div>
     <div class="card-body">
       <form onsubmit="enregistrerFacture(event)">
         <div class="form-row">
@@ -272,17 +398,14 @@ td.center{text-align:center}
 
 <script>
 const STORAGE_KEY = 'msck_chic_global_db';
-const OLD_KEYS = ['msck_v10_data', 'msck_v11_data', 'msck_v12_data', 'msck_v16_data', 'msck_chic_data'];
+const OLD_KEYS = ['msck_v10_data', 'msck_v11_data', 'msck_v12_data', 'msck_v16_data', 'msck_v17_data'];
 
 function recupererAnciennesDonnees() {
   let existing = localStorage.getItem(STORAGE_KEY);
   if (!existing) {
     for (let oldKey of OLD_KEYS) {
       let oldData = localStorage.getItem(oldKey);
-      if (oldData) {
-        localStorage.setItem(STORAGE_KEY, oldData);
-        break;
-      }
+      if (oldData) { localStorage.setItem(STORAGE_KEY, oldData); break; }
     }
   }
 }
@@ -295,15 +418,30 @@ let db = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
 };
 
 let periodeActive = "S27";
+let editIndex = -1; // Pour mémoriser quelle facture on modifie
+
+// Correspondance des Semaines ISO pour chaque mois de 2026
+const moisMapping = {
+  "Janvier": [1,2,3,4],
+  "Février": [5,6,7,8],
+  "Mars": [9,10,11,12,13],
+  "Avril": [14,15,16,17],
+  "Mai": [18,19,20,21,22],
+  "Juin": [23,24,25,26],
+  "Juillet": [27,28,29,30,31],
+  "Août": [32,33,34,35],
+  "Septembre": [36,37,38,39],
+  "Octobre": [40,41,42,43],
+  "Novembre": [44,45,46,47,48],
+  "Décembre": [49,50,51,52]
+};
 
 function getDateRangeOfWeek(weekNumber, year) {
   let simple = new Date(year, 0, 1 + (weekNumber - 1) * 7);
   let dow = simple.getDay();
   let ISOweekStart = simple;
-  if (dow <= 4)
-    ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
-  else
-    ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+  if (dow <= 4) ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+  else ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
   let ISOweekEnd = new Date(ISOweekStart);
   ISOweekEnd.setDate(ISOweekStart.getDate() + 6);
 
@@ -321,8 +459,6 @@ function initSemainesOptions() {
     let sVal = "S" + i;
     optionsHtml += `<option value="${sVal}">Semaine ${i} (du ${range.start} au ${range.end})</option>`;
   }
-  optionsHtml += `<option value="MOIS-06">Mois de Juin 2026</option><option value="MOIS-07">Mois de Juillet 2026</option>`;
-  
   document.getElementById('selectSemaine').innerHTML = optionsHtml;
   document.getElementById('saisiePeriodeCible').innerHTML = optionsHtml;
   document.getElementById('selectSemaine').value = periodeActive;
@@ -336,7 +472,6 @@ function verifierLogin() {
 }
 function logout() { document.getElementById('loginOverlay').style.display = 'flex'; }
 
-// PRINCIPE CLÉ : Toute nouvelle semaine s'initialise à 0 € (pas de recopie !)
 function getPeriodeData(p) {
   if(!db.periodes[p]) {
     db.periodes[p] = { ca: 0, masseSalariale: 0, heures: 0, tauxHoraire: 17.50, factures: [] };
@@ -347,12 +482,19 @@ function getPeriodeData(p) {
 function changerPeriodeSelection() {
   periodeActive = document.getElementById('selectSemaine').value;
   document.getElementById('saisiePeriodeCible').value = periodeActive;
-  refreshUI(); // Actualisation automatique instantanée sur tous les onglets !
+  refreshUI();
+}
+
+function allerASemaine(sVal) {
+  periodeActive = sVal;
+  document.getElementById('selectSemaine').value = sVal;
+  changerPeriodeSelection();
+  window.scrollTo({top: 0, behavior: 'smooth'});
 }
 
 function actualiserPeriode() {
   changerPeriodeSelection();
-  alert("🔄 Données actualisées avec succès pour : " + periodeActive);
+  alert("🔄 Données actualisées pour : " + periodeActive);
 }
 
 function changerSemaine(sens) {
@@ -365,11 +507,7 @@ function saveData() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(db)); 
   refreshUI(); 
 }
-
-function manuelSave() {
-  saveData();
-  alert("💾 Données sauvegardées avec succès !");
-}
+function manuelSave() { saveData(); alert("💾 Données sauvegardées !"); }
 
 function showTab(id) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -381,6 +519,32 @@ function showTab(id) {
 
 function fmt(v) { return v.toLocaleString('fr-FR', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' €'; }
 
+// APPLICATION DU CODE COULEUR SUR LES JAUGES GRAPHIQUES ET BADGES
+function appliquerJauge(type, pct, elemGauge, elemBadge, cardElem) {
+  let color = "var(--green)";
+  let text = "🟢 Optimal";
+  let statusClass = "status-ok";
+
+  if (type === 'achats') {
+    if (pct <= 30) { color = "var(--green)"; text = "🟢 Optimal (≤ 30%)"; statusClass = "status-ok"; }
+    else if (pct <= 35) { color = "var(--orange)"; text = "🟠 Vigilance (30-35%)"; statusClass = "status-warn"; }
+    else { color = "var(--red)"; text = "🔴 Dépassement (> 35%)"; statusClass = "status-alert"; }
+  } else {
+    if (pct <= 21) { color = "var(--green)"; text = "🟢 Objectif atteint (≤ 21%)"; statusClass = "status-ok"; }
+    else if (pct <= 24) { color = "var(--orange)"; text = "🟠 Tolérance (21-24%)"; statusClass = "status-warn"; }
+    else { color = "var(--red)"; text = "🔴 Dépassement (> 24%)"; statusClass = "status-alert"; }
+  }
+
+  // Jauge de 0 à 100% visuel (maxé à 100% pour pas déborder)
+  let widthPct = Math.min(Math.max(pct * 2, 5), 100); // Multiplication par 2 pour bien voir les jauges
+  elemGauge.style.width = widthPct + "%";
+  elemGauge.style.background = color;
+
+  elemBadge.className = "badge-status " + statusClass;
+  elemBadge.textContent = text;
+  if(cardElem) cardElem.style.borderColor = color;
+}
+
 function refreshUI() {
   const pData = getPeriodeData(periodeActive);
   const ca = pData.ca || 0;
@@ -389,66 +553,47 @@ function refreshUI() {
   const salReel = pData.masseSalariale || 0;
   const pctSal = ca > 0 ? (salReel / ca * 100) : 0;
 
-  let selectEl = document.getElementById('selectSemaine');
   let activeText = periodeActive;
-  if(selectEl && selectEl.options[selectEl.selectedIndex]) {
-    activeText = selectEl.options[selectEl.selectedIndex].text;
-  }
+  let selectEl = document.getElementById('selectSemaine');
+  if(selectEl && selectEl.options[selectEl.selectedIndex]) activeText = selectEl.options[selectEl.selectedIndex].text;
 
-  document.getElementById('lblPeriodeSub').textContent = "Période : " + activeText;
+  document.getElementById('lblSemaineTitre').textContent = activeText;
   document.getElementById('synCA').textContent = fmt(ca);
   document.getElementById('synAchats').textContent = fmt(totalAchats);
-  document.getElementById('synAchatsPct').textContent = pctAchats.toFixed(1) + '% du CA (Cible 30-35%)';
+  document.getElementById('synAchatsPct').textContent = pctAchats.toFixed(1) + '% du CA';
 
-  const badgeAchats = document.getElementById('badgeAchats');
-  if (pctAchats <= 30) { badgeAchats.className="badge-status status-ok"; badgeAchats.textContent="🟢 Optimal (≤30%)"; }
-  else if (pctAchats <= 35) { badgeAchats.className="badge-status status-warn"; badgeAchats.textContent="🟠 Vigilance (30-35%)"; }
-  else { badgeAchats.className="badge-status status-alert"; badgeAchats.textContent="🔴 Dépassement (>35%)"; }
-
+  appliquerJauge('achats', pctAchats, document.getElementById('gaugeAchats'), document.getElementById('badgeAchats'), document.getElementById('kpiCardAchats'));
+  
   document.getElementById('synSalaires').textContent = fmt(salReel);
-  document.getElementById('synSalairesPct').textContent = pctSal.toFixed(1) + '% du CA (Cible ≤21%)';
+  document.getElementById('synSalairesPct').textContent = pctSal.toFixed(1) + '% du CA';
+  appliquerJauge('salaires', pctSal, document.getElementById('gaugeSalaires'), document.getElementById('badgeSalaires'), document.getElementById('kpiCardSalaires'));
 
-  const badgeSalaires = document.getElementById('badgeSalaires');
-  if (pctSal <= 21) { badgeSalaires.className="badge-status status-ok"; badgeSalaires.textContent="🟢 Objectif atteint (≤21%)"; }
-  else { badgeSalaires.className="badge-status status-alert"; badgeSalaires.textContent="🔴 Trop haut (>21%)"; }
-
-  // Diagnostic
-  let diagText = `<strong>Bilan pour ${activeText} :</strong><br>`;
-  if (ca === 0) {
-    diagText += `⚠️ <em>Aucun Chiffre d'Affaires renseigné pour cette semaine. Veuillez saisir votre CA ci-dessus ou dans l'onglet Achats pour calculer vos marges.</em>`;
-  } else {
-    diagText += `- Achats : <strong>${pctAchats.toFixed(1)}%</strong> du CA (${fmt(totalAchats)} sur ${fmt(ca)}).<br>`;
-    diagText += `- Salaires : <strong>${pctSal.toFixed(1)}%</strong> du CA (${fmt(salReel)} sur ${fmt(ca)}).`;
-  }
-  document.getElementById('diagnosticText').innerHTML = diagText;
-
-  // Achats & Budgets restants
+  // Achats onglet
   document.getElementById('achatsCA').textContent = fmt(ca);
   document.getElementById('achatsTotal').textContent = fmt(totalAchats);
   document.getElementById('achatsPctSub').textContent = pctAchats.toFixed(1) + '% du CA';
+  document.getElementById('achatsRestantOpt').textContent = fmt((ca * 0.30) - totalAchats);
+  document.getElementById('achatsRestantMax').textContent = fmt((ca * 0.35) - totalAchats);
 
-  let budgetOpt = (ca * 0.30) - totalAchats;
-  let budgetMax = (ca * 0.35) - totalAchats;
-  document.getElementById('achatsRestantOpt').textContent = fmt(budgetOpt);
-  document.getElementById('achatsRestantMax').textContent = fmt(budgetMax);
-
-  // Synchronisation des champs CA dans l'onglet Achats et Saisie
   document.getElementById('inputCA_achats').value = ca > 0 ? ca : "";
   document.getElementById('inputCA_saisie').value = ca > 0 ? ca : "";
 
+  // LISTE DES FACTURES AVEC BOUTON MODIFIER
   const tb = document.getElementById('tbodyAchats');
   if(pData.factures.length === 0) {
     tb.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#9E9E9E;padding:20px">Aucune facture enregistrée pour ${activeText}</td></tr>`;
   } else {
-    let facturesTriees = [...pData.factures].sort((a,b) => (b.date || "").localeCompare(a.date || ""));
-    tb.innerHTML = facturesTriees.map((f, i) => `
+    tb.innerHTML = pData.factures.map((f, i) => `
       <tr>
         <td><strong>${f.date || '—'}</strong></td>
         <td><span class="badge ${f.origin && f.origin.includes('Auto')?'badge-auto':'badge-max'}">${f.origin || 'Manuel'}</span></td>
         <td><strong style="color:${f.fournisseur==='Maxi Distrib'?'var(--orange)':'var(--blue)'}">${f.fournisseur}</strong></td>
         <td>${f.ref}</td>
         <td class="num" style="font-weight:700">${fmt(f.montant)}</td>
-        <td class="center"><button class="btn btn-sm btn-gray" style="color:var(--red)" onclick="supprimerFacture(${i})" title="Supprimer">✕ Supprimer</button></td>
+        <td class="center" style="white-space:nowrap">
+          <button class="btn btn-sm btn-blue" onclick="ouvrirModaleEdit(${i})" title="Modifier cette facture">✏️ Modifier</button>
+          <button class="btn btn-sm btn-gray" style="color:var(--red)" onclick="supprimerFacture(${i})" title="Supprimer">✕</button>
+        </td>
       </tr>
     `).join('');
   }
@@ -458,13 +603,124 @@ function refreshUI() {
   document.getElementById('salBudget21').textContent = fmt(ca * 0.21);
   document.getElementById('salReel').textContent = fmt(salReel);
   document.getElementById('salPctSub').textContent = pctSal.toFixed(1) + '% du CA';
-  
   document.getElementById('inputMasseSalariale').value = salReel > 0 ? salReel : "";
   document.getElementById('inputHeures').value = pData.heures > 0 ? pData.heures : "";
   document.getElementById('inputTauxHoraire').value = pData.tauxHoraire || 17.50;
+
+  // Rafraîchissement du module mensuel
+  rafraichirMois();
 }
 
-// Enregistrement du CA spécifique à la semaine active (sans toucher aux autres !)
+// FONCTIONS DU MOTEUR MENSUEL AVEC DRILL-DOWN
+function rafraichirMois() {
+  const moisChoisi = document.getElementById('selectMoisSynthese').value;
+  const semainesDuMois = moisMapping[moisChoisi] || [];
+
+  let cumulCA = 0;
+  let cumulAchats = 0;
+  let cumulSalaires = 0;
+
+  let lignesHtml = "";
+
+  semainesDuMois.forEach(wNum => {
+    let sVal = "S" + wNum;
+    let sData = db.periodes[sVal] || { ca: 0, masseSalariale: 0, factures: [] };
+    let caSem = sData.ca || 0;
+    let achatsSem = (sData.factures || []).reduce((s, f) => s + f.montant, 0);
+    let salSem = sData.masseSalariale || 0;
+
+    cumulCA += caSem;
+    cumulAchats += achatsSem;
+    cumulSalaires += salSem;
+
+    let pctAch = caSem > 0 ? (achatsSem / caSem * 100) : 0;
+    let pctSal = caSem > 0 ? (salSem / caSem * 100) : 0;
+    let range = getDateRangeOfWeek(wNum, 2026);
+
+    // Mini jauges et badges pour le drill-down
+    let colAch = pctAch <= 30 ? "var(--green)" : (pctAch <= 35 ? "var(--orange)" : "var(--red)");
+    let colSal = pctSal <= 21 ? "var(--green)" : (pctSal <= 24 ? "var(--orange)" : "var(--red)");
+
+    lignesHtml += `
+      <tr style="${sVal===periodeActive ? 'background:#FFF3E0;font-weight:bold;' : ''}">
+        <td><strong style="color:var(--orange)">Semaine S${wNum}</strong> ${sVal===periodeActive ? '👈' : ''}</td>
+        <td>du ${range.start} au ${range.end}</td>
+        <td class="num">${fmt(caSem)}</td>
+        <td>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="color:${colAch};font-weight:700">${pctAch.toFixed(1)}%</span>
+            <span style="font-size:11px;color:#757575">(${fmt(achatsSem)})</span>
+          </div>
+          <div class="gauge-container" style="height:5px;margin-top:2px"><div class="gauge-fill" style="width:${Math.min(pctAch*2,100)}%;background:${colAch}"></div></div>
+        </td>
+        <td>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="color:${colSal};font-weight:700">${pctSal.toFixed(1)}%</span>
+            <span style="font-size:11px;color:#757575">(${fmt(salSem)})</span>
+          </div>
+          <div class="gauge-container" style="height:5px;margin-top:2px"><div class="gauge-fill" style="width:${Math.min(pctSal*2,100)}%;background:${colSal}"></div></div>
+        </td>
+        <td class="center">
+          <button class="btn btn-sm btn-gray" onclick="allerASemaine('${sVal}')" title="Basculer sur cette semaine">🔍 Voir</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  document.getElementById('tbodyDrillDown').innerHTML = lignesHtml;
+
+  // Calculs mensuels
+  let moisPctAch = cumulCA > 0 ? (cumulAchats / cumulCA * 100) : 0;
+  let moisPctSal = cumulCA > 0 ? (cumulSalaires / cumulCA * 100) : 0;
+
+  document.getElementById('moisCA').textContent = fmt(cumulCA);
+  document.getElementById('moisAchatsVal').textContent = fmt(cumulAchats);
+  document.getElementById('moisAchatsPct').textContent = moisPctAch.toFixed(1) + "%";
+  document.getElementById('moisSalVal').textContent = fmt(cumulSalaires);
+  document.getElementById('moisSalPct').textContent = moisPctSal.toFixed(1) + "%";
+
+  // Badges mensuels
+  let badgeAch = document.getElementById('moisAchatsBadge');
+  if (moisPctAch <= 30) { badgeAch.className="badge-status status-ok"; badgeAch.textContent="🟢 OPTIMAL (≤30%)"; }
+  else if (moisPctAch <= 35) { badgeAch.className="badge-status status-warn"; badgeAch.textContent="🟠 TOLÉRANCE (30-35%)"; }
+  else { badgeAch.className="badge-status status-alert"; badgeAch.textContent="🔴 DÉPASSEMENT (>35%)"; }
+
+  let badgeSal = document.getElementById('moisSalBadge');
+  if (moisPctSal <= 21) { badgeSal.className="badge-status status-ok"; badgeSal.textContent="🟢 OBJECTIF ATTEINT (≤21%)"; }
+  else { badgeSal.className="badge-status status-alert"; badgeSal.textContent="🔴 TROP HAUT (>21%)"; }
+}
+
+// GESTION MODIFICATION D'UNE FACTURE (MODALE)
+function ouvrirModaleEdit(idx) {
+  editIndex = idx;
+  let f = getPeriodeData(periodeActive).factures[idx];
+  document.getElementById('editDate').value = f.date || new Date().toISOString().slice(0, 10);
+  document.getElementById('editFour').value = f.fournisseur || "Maxi Distrib";
+  document.getElementById('editRef').value = f.ref || "";
+  document.getElementById('editMontant').value = f.montant || 0;
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function fermerModaleEdit() {
+  document.getElementById('editModal').style.display = 'none';
+  editIndex = -1;
+}
+
+function sauvegarderModificationFacture(e) {
+  e.preventDefault();
+  if (editIndex !== -1) {
+    let f = getPeriodeData(periodeActive).factures[editIndex];
+    f.date = document.getElementById('editDate').value;
+    f.fournisseur = document.getElementById('editFour').value;
+    f.ref = document.getElementById('editRef').value;
+    f.montant = parseFloat(document.getElementById('editMontant').value) || 0;
+    
+    saveData();
+    fermerModaleEdit();
+    alert("✅ Facture modifiée avec succès !");
+  }
+}
+
 function saveCA(source) { 
   let val = 0;
   if (source === 'achats') {
@@ -482,20 +738,15 @@ function calculerParHeures() {
   let heures = parseFloat(document.getElementById('inputHeures').value) || 0;
   let taux = parseFloat(document.getElementById('inputTauxHoraire').value) || 17.50;
   let totalSal = heures * taux;
-
   let pData = getPeriodeData(periodeActive);
-  pData.heures = heures;
-  pData.tauxHoraire = taux;
-  pData.masseSalariale = totalSal;
-  
+  pData.heures = heures; pData.tauxHoraire = taux; pData.masseSalariale = totalSal;
   document.getElementById('inputMasseSalariale').value = totalSal > 0 ? totalSal.toFixed(2) : "";
   saveData();
 }
 
 function saveSalairesDirect() { 
   let totalSal = parseFloat(document.getElementById('inputMasseSalariale').value) || 0;
-  let pData = getPeriodeData(periodeActive);
-  pData.masseSalariale = totalSal;
+  getPeriodeData(periodeActive).masseSalariale = totalSal;
   saveData(); 
 }
 
@@ -511,7 +762,7 @@ function enregistrerFacture(e) {
   if(!isNaN(montant) && montant > 0) {
     getPeriodeData(cible).factures.push({date, origin, fournisseur, ref, montant});
     saveData();
-    alert(`✅ Facture enregistrée dans la période ${cible} !`);
+    alert(`✅ Facture enregistrée dans ${cible} !`);
     document.getElementById('saisieRef').value = '';
     document.getElementById('inputMontant').value = '';
     showTab('achats');
